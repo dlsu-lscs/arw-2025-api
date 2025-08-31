@@ -14,6 +14,7 @@ Goal: Establish a clean, domain-driven project structure and create the core JPA
     - `organization`
     - `publication`
     - `user`
+    - `auth` (for authentication-specific logic)
     - `config` (for configuration files like `SecurityConfig`)
     - `common` (for shared utilities, exceptions, etc.)
 
@@ -28,32 +29,36 @@ Goal: Establish a clean, domain-driven project structure and create the core JPA
 
 ---
 
-## Phase 2: Authentication (Google OAuth2 + JWT)
+## Phase 2: Authentication (OAuth2 + JWTs + Refresh Tokens)
 
-Goal: Implement a secure authentication flow where users log in with Google, and the backend issues a JWT in an http-only cookie.
+Goal: Implement a secure, stateless authentication flow using a short-lived JWT access token and a long-lived refresh token, both transported via secure, http-only cookies.
 
-1.  **Update User Schema (Optional):** The `display_picture` field is `VARCHAR(255)`, which is generally sufficient for a URL. If Google ever provides a longer URL, you might need to change this to `TEXT`. For now, it's okay.
+1.  **JWT Service:**
+    - Create a `JwtService` in the `auth` package to handle the creation and validation of JWTs.
 
-2.  **Configure Spring Security:**
-    - Update `SecurityConfig.java` to configure the OAuth2 login flow.
-    - Define which routes are public (`/login`, `/`, etc.) and which are protected.
-
-3.  **Create a Custom OAuth2 Success Handler:**
-    - This component will be triggered after a successful Google login.
+2.  **Custom OAuth2 Success Handler:**
+    - This component is triggered after a successful Google login.
     - Its job is to:
-        a. Fetch the user's details from Google.
-        b. Check if a user with that email exists in your `users` table. If not, create a new user (this is called "just-in-time provisioning").
-        c. Generate a JWT containing user details (like ID and roles).
-        d. Create a secure, http-only cookie containing the JWT and add it to the HTTP response.
-        e. Redirect the user to the frontend application.
+        a. Fetch user details from Google.
+        b. Use a `UserService` to find or create a user in your database (just-in-time provisioning).
+        c. Generate a short-lived JWT **access token** (e.g., 15-30 minutes).
+        d. Generate a long-lived **refresh token** (e.g., 7 days) and store a record of it in the database for security.
+        e. Create secure, http-only cookies for both tokens and add them to the response.
+        f. Redirect the user to your frontend application.
 
-4.  **Create a JWT Validation Filter:**
-    - This filter will run on every incoming request.
-    - It will read the JWT from the cookie, validate it, and set the user's authentication context in Spring Security, allowing access to protected endpoints.
+3.  **JWT Authentication Filter:**
+    - This custom filter runs on every request.
+    - It reads the `access_token` cookie, validates the JWT, and if valid, sets the user's authentication context in Spring Security.
+    - If the access token is expired, it rejects the request, leading the frontend to use the refresh token.
 
-5.  **Create Login/Logout Endpoints:**
-    - **`/login`:** This endpoint won't have custom logic. Instead, you'll configure Spring Security to redirect unauthenticated users hitting a protected endpoint to the Google login page. The frontend will likely have a "Login with Google" button that links to `http://<your-backend>/oauth2/authorization/google`.
-    - **`/logout`:** Create a controller endpoint for `/logout`. This endpoint will clear the JWT cookie and invalidate the session.
+4.  **Create Auth Controller (`/api/auth/...`):**
+    - **`/refresh` Endpoint:** This endpoint will be called by the frontend when the access token expires. It expects the `refresh_token` cookie. It validates the refresh token against the database, and if valid, issues a new access token cookie.
+    - **`/logout` Endpoint:** This endpoint clears the `access_token` and `refresh_token` cookies by re-setting them with a `Max-Age` of 0. It should also invalidate the refresh token in the database so it cannot be used again.
+
+5.  **Update Security Configuration:**
+    - In `SecurityConfig.java`, configure the full filter chain: OAuth2 login, the JWT Authentication Filter, and public/protected routes.
+    - Public routes will include `/`, `/oauth2/**`, and `/api/auth/refresh`.
+    - All other API routes (e.g., `/api/organizations/**`) will be protected.
 
 ---
 
