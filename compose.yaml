@@ -1,1 +1,16 @@
 services:
+  db:
+    image: mysql:8.0
+    container_name: arw-2025-db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=arw-2025
+      - MYSQL_USER=arw-2025
+      - MYSQL_PASSWORD=arw-2025
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
