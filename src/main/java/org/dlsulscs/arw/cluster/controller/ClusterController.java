@@ -31,6 +31,12 @@ public class ClusterController {
         return ResponseEntity.ok(cluster);
     }
 
+    @GetMapping("/name/{name}")
+    public ResponseEntity<Cluster> getClusterByName(@PathVariable String name) {
+        Cluster cluster = clusterService.getClusterByName(name);
+        return ResponseEntity.ok(cluster);
+    }
+
     @PostMapping
     public ResponseEntity<Cluster> createCluster(@RequestBody Cluster cluster) {
         Cluster createdCluster = clusterService.createCluster(cluster);
