@@ -1,4 +1,4 @@
-package org.dlsulscs.arw.configs;
+package org.dlsulscs.arw.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
