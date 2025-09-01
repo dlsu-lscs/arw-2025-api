@@ -27,6 +27,44 @@ Goal: Establish a clean, domain-driven project structure and create the core JPA
     - Inside each domain package, create a `repository` sub-package (e.g., `organization/repository`).
     - Create a repository interface for each entity that extends `JpaRepository` (e.g., `OrganizationRepository extends JpaRepository<Organization, Integer>`).
 
+4.  **Target Project Structure:**
+    Once complete, the project structure will look like this, promoting scalability and clear separation of concerns within each feature:
+
+    ```
+    src/main/java/org/dlsulscs/arw/
+    ├── auth/
+    │   ├── controller/
+    │   │   └── AuthController.java
+    │   ├── service/
+    │   │   └── JwtService.java
+    │   └── ... (DTOs, etc.)
+    ├── cluster/
+    │   ├── controller/
+    │   │   └── ClusterController.java
+    │   ├── model/
+    │   │   └── Cluster.java
+    │   ├── repository/
+    │   │   └── ClusterRepository.java
+    │   └── service/
+    │       └── ClusterService.java
+    ├── common/
+    │   └── exception/
+    │       └── GlobalExceptionHandler.java
+    ├── config/
+    │   └── SecurityConfig.java
+    ├── organization/
+    │   ├── controller/
+    │   │   └── OrganizationController.java
+    │   ├── model/
+    │   │   └── Organization.java
+    │   ├── repository/
+    │   │   └── OrganizationRepository.java
+    │   └── service/
+    │       └── OrganizationService.java
+    ├── ... (other domains like college, publication, user)
+    └── Arw2025ApiApplication.java
+    ```
+
 ---
 
 ## Phase 2: Authentication (OAuth2 + JWTs + Refresh Tokens)
