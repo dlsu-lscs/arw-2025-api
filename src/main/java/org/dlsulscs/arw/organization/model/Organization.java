@@ -4,13 +4,17 @@ import org.dlsulscs.arw.cluster.model.Cluster;
 import org.dlsulscs.arw.college.model.College;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
 @Entity
 @Table(name = "orgs")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Organization {
 
     @Id
