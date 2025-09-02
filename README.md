@@ -66,3 +66,23 @@ clusters (like categories to classify orgs)
     - View org page  
   - Draft flow:  
     - Landing -> Google Login -> List of all orgs -> Cluster list page -> List of orgs per cluster
+
+
+## **Production API Readiness Checklist**
+
+- [ ] Use DTOs for requests and responses
+- [ ] Validate all incoming data (use `@Valid`, custom validators)
+- [ ] Implement global error handling (`@ControllerAdvice`)
+- [ ] Secure endpoints (authentication, authorization)
+- [ ] Document APIs (OpenAPI/Swagger)
+- [ ] Write unit and integration tests
+- [ ] Log requests, responses, and errors
+- [ ] Monitor application health (Actuator, metrics)
+- [ ] Handle pagination for large lists
+- [ ] Set proper HTTP status codes
+- [ ] Use environment variables for secrets/config
+- [ ] Handle CORS if needed
+- [ ] Version your API if public (or better Change Management -> don't implement breaking changes for future changes)
+- [ ] Rate limiting/throttling (if needed)
+- [ ] Graceful shutdown and resource cleanup
+
