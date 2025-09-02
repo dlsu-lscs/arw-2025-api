@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/organizations")
+@RequestMapping("/api/orgs")
 public class OrganizationController {
 
     private final OrganizationService organizationService;
@@ -43,7 +43,7 @@ public class OrganizationController {
     /*
      * Get a list of organizations with their information by cluster name
      * 
-     * Request example: /api/organization/by-cluster-name?clusterName=ENGAGE
+     * Request example: /api/orgs/by-cluster-name?clusterName=ENGAGE
      *
      * @param clusterName
      * 
@@ -59,7 +59,7 @@ public class OrganizationController {
     /*
      * Get organization information by name
      * 
-     * Request example: /api/organization/name/example-org
+     * Request example: /api/orgs/name/example-org
      * 
      * @param name
      * 
