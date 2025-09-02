@@ -27,6 +27,10 @@ public class OrganizationService {
         this.collegeService = collegeService;
     }
 
+    public List<Organization> getAllOrganizations() {
+        return this.organizationRepository.findAll();
+    }
+
     public Organization getOrganizationById(Integer id) {
         return this.organizationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));

@@ -28,22 +28,53 @@ public class OrganizationController {
         this.organizationService = organizationService;
     }
 
-    @PostMapping
-    public ResponseEntity<Organization> createOrganization(@RequestBody OrganizationUpdateRequestDto orgDto) {
-        Organization newOrg = organizationService.createOrganization(orgDto);
-        return ResponseEntity.status(201).body(newOrg);
+    /*
+     * Get all organizations
+     * 
+     * @return list of organizations
+     */
+    @GetMapping
+    public ResponseEntity<List<Organization>> getAllOrganizations() {
+        // TODO: randomize organizations (or should this be done client-side?)
+        List<Organization> orgs = this.organizationService.getAllOrganizations();
+        return ResponseEntity.ok(orgs);
     }
 
+    /*
+     * Get a list of organizations with their information by cluster name
+     * 
+     * Request example: /api/organization/by-cluster-name?clusterName=ENGAGE
+     *
+     * @param clusterName
+     * 
+     * @return list of organizations
+     */
     @GetMapping("/by-cluster-name")
     public ResponseEntity<List<Organization>> getOrganizationNamesByCluster(@RequestParam String clusterName) {
+        // TODO: randomize list of organization response
         List<Organization> orgs = organizationService.getOrganizationByCluster(clusterName);
         return ResponseEntity.ok(orgs);
     }
 
+    /*
+     * Get organization information by name
+     * 
+     * Request example: /api/organization/name/example-org
+     * 
+     * @param name
+     * 
+     * @return organization
+     */
     @GetMapping("/name/{name}")
     public ResponseEntity<Organization> getOrganizationByName(@PathVariable String name) {
         Organization org = organizationService.getOrganizationByName(name);
         return ResponseEntity.ok(org);
+    }
+
+    @PostMapping
+    public ResponseEntity<Organization> createOrganization(@RequestBody OrganizationUpdateRequestDto orgDto) {
+        Organization newOrg = organizationService.createOrganization(orgDto);
+        return ResponseEntity.status(201).body(newOrg);
     }
 
     @PatchMapping("/{id}")
@@ -52,4 +83,9 @@ public class OrganizationController {
         Organization patchedOrg = organizationService.patchOrganization(id, partialUpdateDto);
         return ResponseEntity.ok(patchedOrg);
     }
+
+    // NOTE: do i need a delete endpoint? for what?
+
+    // TODO: add search functionality here
+    // - should include metadata, org name,
 }
