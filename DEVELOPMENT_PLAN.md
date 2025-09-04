@@ -114,7 +114,7 @@ Goal: Implement a secure, stateless authentication flow using a short-lived JWT 
     - If the access token is expired, it rejects the request, leading the frontend to use the refresh token.
 
 4.  **Create Auth Controller (`/api/auth/...`):**
-    - **`/refresh` Endpoint:** This endpoint will be called by the frontend when the access token expires. It expects the `refresh_token` cookie. It validates the refresh token against the database, and if valid, issues a new access token cookie.
+    - **`/refresh` Endpoint:** This endpoint is called by the frontend **reactively** when an `access_token` expires (typically after receiving a `401 Unauthorized` response to an authenticated request). It expects the `refresh_token` cookie. It validates the refresh token against the database, and if valid, issues a new `access_token` cookie.
     - **`/logout` Endpoint:** This endpoint clears the `access_token` and `refresh_token` cookies by re-setting them with a `Max-Age` of 0. It should also invalidate the refresh token in the database so it cannot be used again.
 
 5.  **Update Security Configuration:**
