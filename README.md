@@ -26,6 +26,9 @@ This is the backend API for the Annual Recruitment Week (ARW) 2025 of De La Sall
     ```
     The API will be available at `http://localhost:8080`.
 
+> [!NOTE]
+> On deploying dev environment (not locally) then set `SPRING_PROFILES_ACTIVE=dev`, especially when deploying with Docker.
+
 ### Running in Production (or without Mock Data)
 
 By default (without an active profile), the application runs in a production-like mode where mock data is **not** loaded.
