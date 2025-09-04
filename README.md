@@ -70,11 +70,9 @@ By default (without an active profile), the application runs in a production-lik
 
 ---
 
-## Local API Testing Guide
+## Local API Testing Guide (with Insomnia)
 
-Testing the API locally requires handling the cookie-based authentication flow. Because the API uses secure, `HttpOnly` cookies, you cannot simply copy and paste a token into an `Authorization` header. Instead, you must use a tool that can store and send cookies, just like a browser.
-
-Here is the recommended process using a browser and an API client like Postman or Insomnia.
+Testing the API locally requires handling the cookie-based authentication flow. Because the API uses secure, `HttpOnly` cookies, you cannot simply copy and paste a token into an `Authorization` header. Instead, you must first use a browser to get the cookies and then import them into Insomnia's cookie jar.
 
 **Step 1: Start the Application**
 
@@ -86,30 +84,36 @@ Here is the recommended process using a browser and an API client like Postman o
 
 **Step 2: Authenticate Using Your Browser**
 
-This is the easiest way to get the `access_token` and `refresh_token` cookies.
+This step is required to interact with Google's login page and get the cookies.
 
 1.  Open your web browser (Chrome, Firefox, etc.).
 2.  Navigate to the login endpoint: `http://localhost:8080/oauth2/authorization/google`
 3.  Log in with your Google account.
-4.  After a successful login, the server will set the cookies in your browser and redirect you to the frontend URL (`http://localhost:3000` by default). The page may not load if you don't have a frontend running, but that's okay. The cookies are now set.
+4.  After a successful login, the server will set the cookies in your browser and redirect you to the frontend URL (`http://localhost:3000` by default). The page may not load if you don't have a frontend running, but that's okay. The cookies are now set in your browser.
 
-**Step 3: Make Authenticated Requests with Your API Client**
+**Step 3: Transfer Cookies from Browser to Insomnia**
 
-Now, use an API client like Postman or Insomnia to test your endpoints.
+1.  In your browser, open **Developer Tools** (F12).
+2.  Go to the **Application** tab.
+3.  Under the "Storage" section on the left, expand **Cookies** and select `http://localhost:8080`.
+4.  You will see `access_token` and `refresh_token`. For each token, copy the long string from the "Value" column.
 
-1.  **Enable the Cookie Jar:** Ensure your API client's cookie jar is enabled. In Postman, cookies are managed automatically. In Insomnia, you can find the cookie jar in the top-right corner.
-2.  **Make a Request:** Make a request to a protected endpoint, for example:
-    `GET http://localhost:8080/api/orgs`
-3.  **Do NOT add an `Authorization` header.** Your API client will automatically send the `access_token` cookie it received from the browser session, and the request will be authenticated.
+**Step 4: Add Cookies to Insomnia's Cookie Jar**
 
-**Step 4: Testing Token Refresh**
+1.  In Insomnia, open the **Cookies** manager for your workspace.
+2.  Click **"Add Cookie"** and add the `access_token`:
+    - **Name:** `access_token`
+    - **Value:** *Paste the value you copied.*
+    - **Domain:** `localhost`
+3.  Do the same for the `refresh_token`.
 
-1.  The access token is short-lived (15 minutes by default).
-2.  After it expires, your requests to protected endpoints will fail.
-3.  To get a new access token, make a request to the refresh endpoint:
-    `POST http://localhost:8080/api/auth/refresh`
-4.  Your API client will automatically send the `refresh_token` cookie. The server will validate it and respond by setting a new `access_token` cookie.
-5.  You can now continue making requests to protected endpoints.
+**Step 5: Make Authenticated Requests**
+
+Now you're ready to test.
+
+1.  Create a new request, e.g., `GET http://localhost:8080/api/orgs`.
+2.  **Do NOT add an `Authorization` header.** Insomnia will now automatically send the cookies with every request to `localhost`, authenticating you successfully.
+3.  To test token refresh, wait 15 minutes for the access token to expire, then send a `POST` request to `http://localhost:8080/api/auth/refresh`. This will fail if your refresh token is also expired (it lasts 7 days).
 
 ---
 

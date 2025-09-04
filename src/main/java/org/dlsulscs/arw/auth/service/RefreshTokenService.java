@@ -13,9 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class RefreshTokenService {
+    private static final Logger log = LoggerFactory.getLogger(RefreshTokenService.class);
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
@@ -34,18 +37,27 @@ public class RefreshTokenService {
 
     @Transactional
     public RefreshToken createRefreshToken(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        log.info("Attempting to create refresh token for email: {}", email);
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            log.error("User not found in DB for email: {}", email);
+            throw new ResourceNotFoundException("User not found with email: " + email);
+        }
+        User user = userOptional.get();
+        log.info("User found for refresh token creation: {}", user.getEmail());
 
         // Delete existing token if it exists for the user
         refreshTokenRepository.deleteByUser(user);
+        log.info("Deleted existing refresh token for user: {}", user.getEmail());
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(user);
         refreshToken.setExpiryDate(Instant.now().plusMillis(jwtProperties.refreshTokenExpirationMs()));
         refreshToken.setToken(UUID.randomUUID().toString());
 
-        return refreshTokenRepository.save(refreshToken);
+        RefreshToken savedToken = refreshTokenRepository.save(refreshToken);
+        log.info("Refresh token saved for user: {}", savedToken.getUser().getEmail());
+        return savedToken;
     }
 
     @Transactional
