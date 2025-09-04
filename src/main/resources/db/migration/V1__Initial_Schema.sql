@@ -6,21 +6,21 @@ DROP TABLE IF EXISTS clusters;
 
 -- Table for Clusters
 CREATE TABLE clusters (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
     description TEXT
 );
 
 -- Table for Colleges
 CREATE TABLE colleges (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
     description TEXT
 );
 
 -- Table for Users
 CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     display_picture VARCHAR(255),
     name VARCHAR(255)
@@ -28,7 +28,7 @@ CREATE TABLE users (
 
 -- Table for Organizations
 CREATE TABLE orgs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
     short_name VARCHAR(20),
     about TEXT,
@@ -47,7 +47,7 @@ CREATE TABLE orgs (
 
 -- Table for Organization Publications/Media
 CREATE TABLE org_pubs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     org_id INT,
     main_pub_url TEXT,
     fee_pub_url TEXT,
