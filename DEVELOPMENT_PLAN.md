@@ -120,7 +120,7 @@ Goal: Implement a secure, stateless authentication flow using a short-lived JWT 
 5.  **Update Security Configuration:**
     - In `SecurityConfig.java`, configure the full filter chain: OAuth2 login, the JWT Authentication Filter, and public/protected routes.
     - Public routes will include `/`, `/oauth2/**`, and `/api/auth/refresh`.
-    - All other API routes (e.g., `/api/organizations/**`) will be protected.
+    - All other API routes (e.g., `/api/orgs/**`) will be protected.
 
 ---
 

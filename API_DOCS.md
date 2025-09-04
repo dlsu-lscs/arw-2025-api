@@ -2,16 +2,52 @@
 
 This document provides a reference for the available RESTful endpoints.
 
+---
+
+## Authentication (`/api/auth`)
+
+### Login
+
+Login is handled via an OAuth2 flow with Google. The primary entry point for a client application is to redirect the user to:
+
+`GET /oauth2/authorization/google`
+
+Upon successful authentication, the API will set two `HttpOnly` cookies:
+- `access_token`: A short-lived JWT for authenticating requests.
+- `refresh_token`: A long-lived token used to get a new access token.
+
+The user will then be redirected to the frontend URL specified in the application properties.
+
+### Refresh Access Token
+
+- **Method:** `POST`
+- **Path:** `/api/auth/refresh`
+- **Description:** Renews the `access_token`.
+- **Requirements:** A valid `refresh_token` cookie must be sent with the request.
+- **Response:** Sets a new `access_token` cookie and returns a success message.
+
+### Logout
+
+- **Method:** `POST`
+- **Path:** `/api/auth/logout`
+- **Description:** Logs the user out by invalidating their refresh token on the server and clearing the session cookies.
+- **Requirements:** A valid `refresh_token` cookie must be sent with the request.
+- **Response:** Clears the `access_token` and `refresh_token` cookies.
+
+---
+
 ## Organizations (`/api/orgs`)
 
 ### Get All Organizations
 
 - **Method:** `GET`
 - **Path:** `/api/orgs`
-- **Description:** Retrieves a list of all organizations. Can be filtered by cluster.
+- **Description:** Retrieves a paginated list of all organizations. Can be filtered by cluster.
 - **Query Parameters:**
   - `cluster` (String, optional): The name of the cluster to filter by (e.g., `/api/orgs?cluster=ENGAGE`).
-- **Response:** An array of `Organization` objects.
+  - `page` (Integer, optional, default: 0): The page number to retrieve.
+  - `pageSize` (Integer, optional, default: 10): The number of items per page.
+- **Response:** A `Page` object containing an array of `Organization` objects and pagination details.
 
 ### Search Organizations
 
@@ -20,7 +56,9 @@ This document provides a reference for the available RESTful endpoints.
 - **Description:** Searches for organizations by their name, short name, or the name of their associated cluster.
 - **Query Parameters:**
   - `q` (String, required): The search term (e.g., `/api/orgs/search?q=cs`).
-- **Response:** An array of matching `Organization` objects.
+  - `page` (Integer, optional, default: 0): The page number to retrieve.
+  - `pageSize` (Integer, optional, default: 10): The number of items per page.
+- **Response:** A `Page` object containing an array of matching `Organization` objects and pagination details.
 
 ### Get Organization by ID
 

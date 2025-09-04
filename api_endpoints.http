@@ -1,65 +1,84 @@
 ### Variables
+
 @baseUrl = http://localhost:8080
 @token = <your_jwt_token>
 
-###
+
+### 
+
+
 ### Organizations
-###
+
+
+### 
 
 # Get all organizations
-GET {{baseUrl}}/api/orgs
-Authorization: Bearer {{token}}
+# Authorization: Bearer {{token}}
 
-###
+GET {{baseUrl}}/api/orgs HTTP/1.1
+
+
+### 
 
 # Get all organizations in a specific cluster
-GET {{baseUrl}}/api/orgs?cluster=ENGAGE
+
+GET {{baseUrl}}/api/orgs?cluster=ENGAGE HTTP/1.1
 Authorization: Bearer {{token}}
 
-###
+
+### 
 
 # Search for organizations
-GET {{baseUrl}}/api/orgs/search?q=cs
+
+GET {{baseUrl}}/api/orgs/search?q=cs HTTP/1.1
 Authorization: Bearer {{token}}
 
-###
+
+### 
 
 # Get organization by ID
-GET {{baseUrl}}/api/orgs/1
+
+GET {{baseUrl}}/api/orgs/1 HTTP/1.1
 Authorization: Bearer {{token}}
 
-###
+
+### 
 
 # Get organization by name
-GET {{baseUrl}}/api/orgs/name/Computer-Society
+
+GET {{baseUrl}}/api/orgs/name/Computer-Society HTTP/1.1
 Authorization: Bearer {{token}}
 
-###
+
+### 
 
 # Create a new organization
-POST {{baseUrl}}/api/orgs
+
+POST {{baseUrl}}/api/orgs HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
+  "about": "About the new test organization.",
+  "bundleFee": 40.00,
+  "clusterName": "ENGAGE",
+  "collegeName": "CCS",
+  "facebookUrl": "https://facebook.com/neworg",
+  "fee": 50.00,
+  "gformsUrl": "https://forms.gle/neworg",
+  "mission": "Our mission.",
   "name": "New Test Org",
   "shortName": "NTO",
-  "about": "About the new test organization.",
-  "fee": 50.00,
-  "bundleFee": 40.00,
-  "gformsUrl": "https://forms.gle/neworg",
-  "facebookUrl": "https://facebook.com/neworg",
-  "mission": "Our mission.",
-  "vision": "Our vision.",
   "tagline": "A new beginning.",
-  "clusterName": "ENGAGE",
-  "collegeName": "CCS"
+  "vision": "Our vision."
 }
 
-###
+
+### 
 
 # Partially update an existing organization
-PATCH {{baseUrl}}/api/orgs/1
+
+PATCH {{baseUrl}}/api/orgs/1 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -67,69 +86,96 @@ Authorization: Bearer {{token}}
   "tagline": "An updated tagline for the organization."
 }
 
-###
+
+### 
+
+
 ### Clusters
-###
+
+
+### 
 
 # Get all clusters
-GET {{baseUrl}}/api/clusters
+
+GET {{baseUrl}}/api/clusters HTTP/1.1
 Authorization: Bearer {{token}}
 
-###
+
+### 
 
 # Get cluster by ID
-GET {{baseUrl}}/api/clusters/1
+
+GET {{baseUrl}}/api/clusters/1 HTTP/1.1
 Authorization: Bearer {{token}}
 
-###
+
+### 
 
 # Get cluster by name
-GET {{baseUrl}}/api/clusters/name/ENGAGE
+
+GET {{baseUrl}}/api/clusters/name/ENGAGE HTTP/1.1
 Authorization: Bearer {{token}}
 
-###
+
+### 
 
 # Create a new cluster
-POST {{baseUrl}}/api/clusters
+
+POST {{baseUrl}}/api/clusters HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "name": "New Cluster",
-  "description": "A brand new cluster for organizations."
+  "description": "A brand new cluster for organizations.",
+  "name": "New Cluster"
 }
 
-###
+
+### 
 
 # Update a cluster
-PUT {{baseUrl}}/api/clusters/1
+
+PUT {{baseUrl}}/api/clusters/1 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "name": "Updated Cluster Name",
-  "description": "Updated description."
+  "description": "Updated description.",
+  "name": "Updated Cluster Name"
 }
 
-###
+
+### 
 
 # Delete a cluster
-DELETE {{baseUrl}}/api/clusters/1
+
+DELETE {{baseUrl}}/api/clusters/1 HTTP/1.1
 Authorization: Bearer {{token}}
 
-###
+
+### 
+
+
 ### Publications
-###
+
+
+### 
 
 # Get publications by organization name
-GET {{baseUrl}}/api/pubs/by-org-name?orgName=Computer-Society
+
+GET {{baseUrl}}/api/pubs/by-org-name?orgName=Computer-Society HTTP/1.1
 Authorization: Bearer {{token}}
 
-###
+
+### 
+
+
 ### Users
-###
+
+
+### 
 
 # Get user by email
-GET {{baseUrl}}/api/users?email=user@example.com
-Authorization: Bearer {{token}}
 
+GET {{baseUrl}}/api/users?email=user@example.com HTTP/1.1
+Authorization: Bearer {{token}}
