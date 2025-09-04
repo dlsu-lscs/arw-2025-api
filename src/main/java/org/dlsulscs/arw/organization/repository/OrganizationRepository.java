@@ -26,4 +26,9 @@ public interface OrganizationRepository extends JpaRepository<Organization, Inte
             "lower(o.cluster.name) LIKE lower(concat('%', :query, '%'))")
     Page<Organization> search(@Param("query") String query, Pageable pageable);
 
+    Page<Organization> findAll(Pageable pageable);
+
+    @Query("SELECT o FROM Organization o WHERE lower(o.cluster.name) = lower(:clusterName)")
+    Page<Organization> findAllByClusterName(@Param("clusterName") String clusterName, Pageable pageable);
+
 }
