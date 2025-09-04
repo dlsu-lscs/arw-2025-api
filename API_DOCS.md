@@ -54,6 +54,8 @@ The user will then be redirected to the frontend URL specified in the applicatio
 - **Method:** `GET`
 - **Path:** `/api/orgs/search`
 - **Description:** Searches for organizations by their name, short name, or the name of their associated cluster.
+- **Example Requests:** 
+  - `/api/orgs/search?q=cs&page=1&pageSize=10`
 - **Query Parameters:**
   - `q` (String, required): The search term (e.g., `/api/orgs/search?q=cs`).
   - `page` (Integer, optional, default: 0): The page number to retrieve.
