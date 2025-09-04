@@ -1,5 +1,6 @@
 package org.dlsulscs.arw.organization.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.dlsulscs.arw.cluster.model.Cluster;
 import org.dlsulscs.arw.college.model.College;
 import org.dlsulscs.arw.publication.model.Publications;
@@ -42,5 +43,6 @@ public class Organization {
     private College college;
 
     @OneToOne(mappedBy = "organization")
+    @JsonManagedReference
     private Publications publications;
 }

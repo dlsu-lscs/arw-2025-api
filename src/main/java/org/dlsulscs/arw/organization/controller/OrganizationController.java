@@ -1,12 +1,18 @@
 package org.dlsulscs.arw.organization.controller;
 
-import org.dlsulscs.arw.organization.dto.OrganizationUpdateRequestDto;
+import org.dlsulscs.arw.organization.dto.OrganizationListResponseDto;
+import org.dlsulscs.arw.organization.dto.OrganizationCreateUpdateRequestDto;
 import org.dlsulscs.arw.organization.model.Organization;
 import org.dlsulscs.arw.organization.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import org.dlsulscs.arw.organization.dto.OrganizationResponseDto;
+import org.dlsulscs.arw.cluster.dto.ClusterDto;
+import org.dlsulscs.arw.college.dto.CollegeDto;
+import org.dlsulscs.arw.publication.dto.PublicationsDto;
 
 @RestController
 @RequestMapping("/api/orgs")
@@ -31,12 +37,13 @@ public class OrganizationController {
      * @return A list of organizations.
      */
     @GetMapping
-    public ResponseEntity<Page<Organization>> getOrganizations(
+    public ResponseEntity<Page<OrganizationResponseDto>> getOrganizations(
             @RequestParam(required = false) String cluster,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer pageSize) {
         Page<Organization> orgs = organizationService.getOrganizations(cluster, page, pageSize);
-        return ResponseEntity.ok(orgs);
+        Page<OrganizationResponseDto> orgsDto = orgs.map(this::mapToOrganizationResponseDto);
+        return ResponseEntity.ok(orgsDto);
     }
 
     /**
@@ -48,17 +55,18 @@ public class OrganizationController {
      * @return A list of matching organizations.
      */
     @GetMapping("/search")
-    public ResponseEntity<Page<Organization>> searchOrganizations(@RequestParam("q") String query,
+    public ResponseEntity<Page<OrganizationResponseDto>> searchOrganizations(@RequestParam("q") String query,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer pageSize) {
         Page<Organization> orgs = organizationService.searchOrganizations(query, page, pageSize);
-        return ResponseEntity.ok(orgs);
+        Page<OrganizationResponseDto> orgsDto = orgs.map(this::mapToOrganizationResponseDto);
+        return ResponseEntity.ok(orgsDto);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Organization> getOrganizationById(@PathVariable Integer id) {
+    public ResponseEntity<OrganizationResponseDto> getOrganizationById(@PathVariable Integer id) {
         Organization org = this.organizationService.getOrganizationById(id);
-        return ResponseEntity.ok(org);
+        return ResponseEntity.ok(mapToOrganizationResponseDto(org));
     }
 
     /**
@@ -69,21 +77,69 @@ public class OrganizationController {
      * @return The organization.
      */
     @GetMapping("/name/{name}")
-    public ResponseEntity<Organization> getOrganizationByName(@PathVariable String name) {
+    public ResponseEntity<OrganizationResponseDto> getOrganizationByName(@PathVariable String name) {
         Organization org = organizationService.getOrganizationByName(name);
-        return ResponseEntity.ok(org);
+        return ResponseEntity.ok(mapToOrganizationResponseDto(org));
     }
 
     @PostMapping
-    public ResponseEntity<Organization> createOrganization(@RequestBody OrganizationUpdateRequestDto orgDto) {
+    public ResponseEntity<OrganizationResponseDto> createOrganization(
+            @RequestBody OrganizationCreateUpdateRequestDto orgDto) {
         Organization newOrg = organizationService.createOrganization(orgDto);
-        return ResponseEntity.status(201).body(newOrg);
+        return ResponseEntity.status(201).body(mapToOrganizationResponseDto(newOrg));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Organization> patchOrganization(@PathVariable Integer id,
-            @RequestBody OrganizationUpdateRequestDto partialUpdateDto) {
+    public ResponseEntity<OrganizationResponseDto> patchOrganization(@PathVariable Integer id,
+            @RequestBody OrganizationCreateUpdateRequestDto partialUpdateDto) {
         Organization patchedOrg = organizationService.patchOrganization(id, partialUpdateDto);
-        return ResponseEntity.ok(patchedOrg);
+        return ResponseEntity.ok(mapToOrganizationResponseDto(patchedOrg));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrganization(@PathVariable Integer id) {
+        organizationService.deleteOrganization(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    private OrganizationResponseDto mapToOrganizationResponseDto(Organization org) {
+        ClusterDto clusterDto = null;
+        if (org.getCluster() != null) {
+            clusterDto = new ClusterDto(org.getCluster().getId(), org.getCluster().getName(),
+                    org.getCluster().getDescription());
+        }
+
+        CollegeDto collegeDto = null;
+        if (org.getCollege() != null) {
+            collegeDto = new CollegeDto(org.getCollege().getId(), org.getCollege().getName(),
+                    org.getCollege().getDescription());
+        }
+
+        PublicationsDto publicationsDto = null;
+        if (org.getPublications() != null) {
+            publicationsDto = new PublicationsDto(
+                    org.getPublications().getId(),
+                    org.getPublications().getMain_pub_url(),
+                    org.getPublications().getFee_pub_url(),
+                    org.getPublications().getLogo_url(),
+                    org.getPublications().getSub_logo_url(),
+                    org.getPublications().getOrg_vid_url());
+        }
+
+        return new OrganizationResponseDto(
+                org.getId(),
+                org.getName(),
+                org.getShortName(),
+                org.getAbout(),
+                org.getFee(),
+                org.getBundleFee(),
+                org.getGformsUrl(),
+                org.getFacebookUrl(),
+                org.getMission(),
+                org.getVision(),
+                org.getTagline(),
+                clusterDto,
+                collegeDto,
+                publicationsDto);
     }
 }

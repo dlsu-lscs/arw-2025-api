@@ -1,8 +1,13 @@
 package org.dlsulscs.arw.organization.dto;
 
+import org.dlsulscs.arw.cluster.dto.ClusterDto;
+import org.dlsulscs.arw.college.dto.CollegeDto;
+import org.dlsulscs.arw.publication.dto.PublicationsDto;
+
 import java.math.BigDecimal;
 
-public record OrganizationUpdateRequestDto(
+public record OrganizationResponseDto(
+        Integer id,
         String name,
         String shortName,
         String about,
@@ -13,6 +18,8 @@ public record OrganizationUpdateRequestDto(
         String mission,
         String vision,
         String tagline,
-        String clusterName,
-        String collegeName) {
+        ClusterDto cluster,
+        CollegeDto college,
+        PublicationsDto publications
+) {
 }

@@ -31,20 +31,25 @@ public class UserService {
     @Transactional
     public User processOAuth2User(OAuth2User oAuth2User) {
         String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
+        String picture = oAuth2User.getAttribute("picture");
+
         log.info("Processing OAuth2 user with email: {}", email);
         Optional<User> userOptional = userRepository.findByEmail(email);
+        User user;
         if (userOptional.isPresent()) {
             log.info("User found: {}", email);
-            // Potentially update user details here if they have changed
-            return userOptional.get();
+            user = userOptional.get();
+            user.setName(name);
+            user.setDisplay_picture(picture);
         } else {
-            User newUser = new User();
-            newUser.setEmail(email);
-            newUser.setName(oAuth2User.getAttribute("name"));
-            newUser.setDisplay_picture(oAuth2User.getAttribute("picture"));
-            User savedUser = userRepository.save(newUser);
-            log.info("New user saved: {}", savedUser.getEmail());
-            return savedUser;
+            user = new User();
+            user.setName(name);
+            user.setEmail(email);
+            user.setDisplay_picture(picture);
         }
+        User savedUser = userRepository.save(user);
+        log.info("New user saved: {}", savedUser.getEmail());
+        return savedUser;
     }
 }

@@ -1,7 +1,6 @@
 ### Variables
 
 @baseUrl = http://localhost:8080
-@token = <your_jwt_token>
 
 
 ### 
@@ -12,8 +11,7 @@
 
 ### 
 
-# Get all organizations
-# Authorization: Bearer {{token}}
+# Get all organizations (now returns OrganizationListDto with publication URLs)
 
 GET {{baseUrl}}/api/orgs HTTP/1.1
 
@@ -22,8 +20,7 @@ GET {{baseUrl}}/api/orgs HTTP/1.1
 
 # Get all organizations in a specific cluster
 
-GET {{baseUrl}}/api/orgs?cluster=ENGAGE HTTP/1.1
-Authorization: Bearer {{token}}
+GET {{baseUrl}}/api/orgs?cluster=Technology HTTP/1.1
 
 
 ### 
@@ -31,7 +28,6 @@ Authorization: Bearer {{token}}
 # Search for organizations
 
 GET {{baseUrl}}/api/orgs/search?q=cs HTTP/1.1
-Authorization: Bearer {{token}}
 
 
 ### 
@@ -39,15 +35,13 @@ Authorization: Bearer {{token}}
 # Get organization by ID
 
 GET {{baseUrl}}/api/orgs/1 HTTP/1.1
-Authorization: Bearer {{token}}
 
 
 ### 
 
 # Get organization by name
 
-GET {{baseUrl}}/api/orgs/name/Computer-Society HTTP/1.1
-Authorization: Bearer {{token}}
+GET {{baseUrl}}/api/orgs/name/Computer%20Society HTTP/1.1
 
 
 ### 
@@ -56,13 +50,12 @@ Authorization: Bearer {{token}}
 
 POST {{baseUrl}}/api/orgs HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer {{token}}
 
 {
   "about": "About the new test organization.",
   "bundleFee": 40.00,
-  "clusterName": "ENGAGE",
-  "collegeName": "CCS",
+  "clusterName": "Technology",
+  "collegeName": "College of Computer Studies",
   "facebookUrl": "https://facebook.com/neworg",
   "fee": 50.00,
   "gformsUrl": "https://forms.gle/neworg",
@@ -78,9 +71,8 @@ Authorization: Bearer {{token}}
 
 # Partially update an existing organization
 
-PATCH {{baseUrl}}/api/orgs/1 HTTP/1.1
+PATCH {{baseUrl}}/api/orgs/4 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer {{token}}
 
 {
   "tagline": "An updated tagline for the organization."
@@ -98,7 +90,6 @@ Authorization: Bearer {{token}}
 # Get all clusters
 
 GET {{baseUrl}}/api/clusters HTTP/1.1
-Authorization: Bearer {{token}}
 
 
 ### 
@@ -106,15 +97,13 @@ Authorization: Bearer {{token}}
 # Get cluster by ID
 
 GET {{baseUrl}}/api/clusters/1 HTTP/1.1
-Authorization: Bearer {{token}}
 
 
 ### 
 
 # Get cluster by name
 
-GET {{baseUrl}}/api/clusters/name/ENGAGE HTTP/1.1
-Authorization: Bearer {{token}}
+GET {{baseUrl}}/api/clusters/name/Technology HTTP/1.1
 
 
 ### 
@@ -123,7 +112,6 @@ Authorization: Bearer {{token}}
 
 POST {{baseUrl}}/api/clusters HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer {{token}}
 
 {
   "description": "A brand new cluster for organizations.",
@@ -137,7 +125,6 @@ Authorization: Bearer {{token}}
 
 PUT {{baseUrl}}/api/clusters/1 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer {{token}}
 
 {
   "description": "Updated description.",
@@ -150,7 +137,6 @@ Authorization: Bearer {{token}}
 # Delete a cluster
 
 DELETE {{baseUrl}}/api/clusters/1 HTTP/1.1
-Authorization: Bearer {{token}}
 
 
 ### 
@@ -163,8 +149,7 @@ Authorization: Bearer {{token}}
 
 # Get publications by organization name
 
-GET {{baseUrl}}/api/pubs/by-org-name?orgName=Computer-Society HTTP/1.1
-Authorization: Bearer {{token}}
+GET {{baseUrl}}/api/pubs/by-org-name?orgName=Computer%20Society HTTP/1.1
 
 
 ### 
@@ -178,4 +163,3 @@ Authorization: Bearer {{token}}
 # Get user by email
 
 GET {{baseUrl}}/api/users?email=user@example.com HTTP/1.1
-Authorization: Bearer {{token}}

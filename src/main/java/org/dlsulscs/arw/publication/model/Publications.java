@@ -1,5 +1,6 @@
 package org.dlsulscs.arw.publication.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.dlsulscs.arw.organization.model.Organization;
 
 import jakarta.persistence.Entity;
@@ -7,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -31,5 +31,6 @@ public class Publications {
 
     @OneToOne
     @JoinColumn(name = "org_id", unique = true)
+    @JsonBackReference
     private Organization organization;
 }

@@ -5,7 +5,7 @@ import org.dlsulscs.arw.cluster.service.ClusterService;
 import org.dlsulscs.arw.college.model.College;
 import org.dlsulscs.arw.college.service.CollegeService;
 import org.dlsulscs.arw.common.exception.ResourceNotFoundException;
-import org.dlsulscs.arw.organization.dto.OrganizationUpdateRequestDto;
+import org.dlsulscs.arw.organization.dto.OrganizationCreateUpdateRequestDto;
 import org.dlsulscs.arw.organization.model.Organization;
 import org.dlsulscs.arw.organization.repository.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class OrganizationService {
     public Page<Organization> getOrganizations(String clusterName, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         if (clusterName != null && !clusterName.isEmpty()) {
-            return organizationRepository.findOrganizationByClusterName(clusterName, pageable);
+            return organizationRepository.findAllByClusterName(clusterName, pageable);
         }
         return this.organizationRepository.findAll(pageable);
     }
@@ -52,7 +52,7 @@ public class OrganizationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Organization not found with name: " + name));
     }
 
-    public Organization createOrganization(OrganizationUpdateRequestDto orgDto) {
+    public Organization createOrganization(OrganizationCreateUpdateRequestDto orgDto) {
         Cluster cluster = clusterService.getClusterByName(orgDto.clusterName());
         College college = collegeService.getCollegeByName(orgDto.collegeName());
 
@@ -73,7 +73,7 @@ public class OrganizationService {
         return organizationRepository.save(newOrg);
     }
 
-    public Organization patchOrganization(Integer id, OrganizationUpdateRequestDto partialUpdate) {
+    public Organization patchOrganization(Integer id, OrganizationCreateUpdateRequestDto partialUpdate) {
         Organization existingOrg = getOrganizationById(id);
 
         if (partialUpdate.name() != null) {
@@ -82,8 +82,8 @@ public class OrganizationService {
         if (partialUpdate.shortName() != null) {
             existingOrg.setShortName(partialUpdate.shortName());
         }
-        if (partialUpdate.shortName() != null) {
-            existingOrg.setAbout(partialUpdate.shortName());
+        if (partialUpdate.about() != null) {
+            existingOrg.setAbout(partialUpdate.about());
         }
         if (partialUpdate.fee() != null) {
             existingOrg.setFee(partialUpdate.fee());
