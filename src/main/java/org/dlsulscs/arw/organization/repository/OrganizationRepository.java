@@ -1,12 +1,13 @@
 package org.dlsulscs.arw.organization.repository;
 
 import org.dlsulscs.arw.organization.model.Organization;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,6 +18,12 @@ public interface OrganizationRepository extends JpaRepository<Organization, Inte
     Optional<Organization> findByName(@Param("name") String name);
 
     @Query("SELECT o FROM Organization o WHERE lower(o.cluster.name) = lower(:clusterName)")
-    List<Organization> findOrganizationByClusterName(@Param("clusterName") String clusterName);
+    Page<Organization> findOrganizationByClusterName(@Param("clusterName") String clusterName, Pageable pageable);
+
+    @Query("SELECT o FROM Organization o WHERE " +
+            "lower(o.name) LIKE lower(concat('%', :query, '%')) OR " +
+            "lower(o.shortName) LIKE lower(concat('%', :query, '%')) OR " +
+            "lower(o.cluster.name) LIKE lower(concat('%', :query, '%'))")
+    Page<Organization> search(@Param("query") String query, Pageable pageable);
 
 }

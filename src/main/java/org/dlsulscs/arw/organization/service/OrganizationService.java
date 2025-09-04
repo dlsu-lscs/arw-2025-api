@@ -8,9 +8,10 @@ import org.dlsulscs.arw.organization.dto.OrganizationUpdateRequestDto;
 import org.dlsulscs.arw.organization.model.Organization;
 import org.dlsulscs.arw.organization.repository.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class OrganizationService {
@@ -27,8 +28,17 @@ public class OrganizationService {
         this.collegeService = collegeService;
     }
 
-    public List<Organization> getAllOrganizations() {
-        return this.organizationRepository.findAll();
+    public Page<Organization> getOrganizations(String clusterName, Integer page, Integer pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        if (clusterName != null && !clusterName.isEmpty()) {
+            return organizationRepository.findOrganizationByClusterName(clusterName, pageable);
+        }
+        return this.organizationRepository.findAll(pageable);
+    }
+
+    public Page<Organization> searchOrganizations(String query, Integer page, Integer pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return organizationRepository.search(query, pageable);
     }
 
     public Organization getOrganizationById(Integer id) {
@@ -39,10 +49,6 @@ public class OrganizationService {
     public Organization getOrganizationByName(String name) {
         return this.organizationRepository.findByName(name)
                 .orElseThrow(() -> new RuntimeException("Organization not found with name: " + name));
-    }
-
-    public List<Organization> getOrganizationByCluster(String clusterName) {
-        return organizationRepository.findOrganizationByClusterName(clusterName);
     }
 
     public Organization createOrganization(OrganizationUpdateRequestDto orgDto) {
