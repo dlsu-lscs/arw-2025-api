@@ -1,5 +1,6 @@
 package org.dlsulscs.arw.publication.service;
 
+import org.dlsulscs.arw.common.exception.ResourceNotFoundException;
 import org.dlsulscs.arw.publication.model.Publications;
 import org.dlsulscs.arw.publication.repository.PublicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class PublicationService {
      */
     public Publications getPubsByOrgName(String orgName) {
         Publications pub = this.publicationRepository.findPubsByOrgName(orgName)
-                .orElseThrow(() -> new RuntimeException("Publication not found with org name: " + orgName));
+                .orElseThrow(() -> new ResourceNotFoundException("Publication not found with org name: " + orgName));
         return pub;
     }
 }

@@ -2,6 +2,7 @@ package org.dlsulscs.arw.cluster.service;
 
 import org.dlsulscs.arw.cluster.model.Cluster;
 import org.dlsulscs.arw.cluster.repository.ClusterRepository;
+import org.dlsulscs.arw.common.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +25,12 @@ public class ClusterService {
     // - removing orElseThrow would require to return Optional<Cluster>
     public Cluster getClusterById(Integer id) {
         return clusterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cluster not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Cluster not found with id: " + id));
     }
 
     public Cluster getClusterByName(String name) {
         return clusterRepository.findByName(name)
-                .orElseThrow(() -> new RuntimeException("Cluster not found with name: " + name));
+                .orElseThrow(() -> new ResourceNotFoundException("Cluster not found with name: " + name));
     }
 
     public Cluster createCluster(Cluster cluster) {

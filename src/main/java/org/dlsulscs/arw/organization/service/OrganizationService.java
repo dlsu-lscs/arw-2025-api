@@ -4,6 +4,7 @@ import org.dlsulscs.arw.cluster.model.Cluster;
 import org.dlsulscs.arw.cluster.service.ClusterService;
 import org.dlsulscs.arw.college.model.College;
 import org.dlsulscs.arw.college.service.CollegeService;
+import org.dlsulscs.arw.common.exception.ResourceNotFoundException;
 import org.dlsulscs.arw.organization.dto.OrganizationUpdateRequestDto;
 import org.dlsulscs.arw.organization.model.Organization;
 import org.dlsulscs.arw.organization.repository.OrganizationRepository;
@@ -43,12 +44,12 @@ public class OrganizationService {
 
     public Organization getOrganizationById(Integer id) {
         return this.organizationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + id));
     }
 
     public Organization getOrganizationByName(String name) {
         return this.organizationRepository.findByName(name)
-                .orElseThrow(() -> new RuntimeException("Organization not found with name: " + name));
+                .orElseThrow(() -> new ResourceNotFoundException("Organization not found with name: " + name));
     }
 
     public Organization createOrganization(OrganizationUpdateRequestDto orgDto) {
