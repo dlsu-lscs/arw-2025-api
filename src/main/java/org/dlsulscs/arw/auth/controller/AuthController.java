@@ -9,6 +9,7 @@ import org.dlsulscs.arw.config.properties.JwtProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -61,5 +62,10 @@ public class AuthController {
                     return ResponseEntity.ok().body("Access token refreshed");
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
+    }
+
+    @GetMapping("/test/authenticated")
+    public ResponseEntity<String> testAuthenticated() {
+        return ResponseEntity.ok("Authenticated");
     }
 }

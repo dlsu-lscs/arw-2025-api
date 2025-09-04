@@ -25,7 +25,8 @@ public class RefreshTokenService {
     private final JwtProperties jwtProperties;
 
     @Autowired
-    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UserRepository userRepository, JwtProperties jwtProperties) {
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UserRepository userRepository,
+            JwtProperties jwtProperties) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.userRepository = userRepository;
         this.jwtProperties = jwtProperties;
@@ -35,28 +36,32 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByToken(token);
     }
 
+    /**
+     * 
+     * @param user of type User
+     * @return
+     */
     @Transactional
-    public RefreshToken createRefreshToken(String email) {
-        log.info("Attempting to create refresh token for email: {}", email);
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            log.error("User not found in DB for email: {}", email);
-            throw new ResourceNotFoundException("User not found with email: " + email);
+    public RefreshToken createRefreshToken(User user) {
+        log.info("Attempting to create or update refresh token for user: {}", user.getEmail());
+
+        Optional<RefreshToken> existingToken = refreshTokenRepository.findByUser(user);
+        RefreshToken refreshToken;
+
+        if (existingToken.isPresent()) {
+            refreshToken = existingToken.get();
+            log.info("Existing refresh token found for user: {}", user.getEmail());
+        } else {
+            refreshToken = new RefreshToken();
+            refreshToken.setUser(user);
+            log.info("No existing refresh token found, creating new for user: {}", user.getEmail());
         }
-        User user = userOptional.get();
-        log.info("User found for refresh token creation: {}", user.getEmail());
 
-        // Delete existing token if it exists for the user
-        refreshTokenRepository.deleteByUser(user);
-        log.info("Deleted existing refresh token for user: {}", user.getEmail());
-
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setUser(user);
         refreshToken.setExpiryDate(Instant.now().plusMillis(jwtProperties.refreshTokenExpirationMs()));
         refreshToken.setToken(UUID.randomUUID().toString());
 
         RefreshToken savedToken = refreshTokenRepository.save(refreshToken);
-        log.info("Refresh token saved for user: {}", savedToken.getUser().getEmail());
+        log.info("Refresh token saved/updated for user: {}", savedToken.getUser().getEmail());
         return savedToken;
     }
 
