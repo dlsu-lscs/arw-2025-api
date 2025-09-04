@@ -4,10 +4,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.dlsulscs.arw.auth.model.RefreshToken;
-import org.dlsulscs.arw.common.exception.ResourceNotFoundException;
 import org.dlsulscs.arw.config.properties.JwtProperties;
-import org.dlsulscs.arw.user.model.User;
-import org.dlsulscs.arw.user.service.UserService;
+import org.dlsulscs.arw.user.model.User; // Added import for User
+import org.dlsulscs.arw.user.service.UserService; // Added import for UserService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -26,21 +25,27 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
-    private final UserService userService; // Inject UserService
+    private final UserService userService;
     private final JwtProperties jwtProperties;
     private final String redirectUri;
 
     @Autowired
     public AuthenticationSuccessHandler(JwtService jwtService, RefreshTokenService refreshTokenService,
-            UserService userService, JwtProperties jwtProperties,
+            UserService userService,
+            JwtProperties jwtProperties,
             @Value("${app.oauth2.redirect-uri}") String redirectUri) {
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
-        this.userService = userService; // Assign injected UserService
+        this.userService = userService;
         this.jwtProperties = jwtProperties;
         this.redirectUri = redirectUri;
     }
 
+    /**
+     * on successful login
+     * 
+     * @param
+     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException {
@@ -48,18 +53,10 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
         String email = oAuth2User.getAttribute("email");
         log.info("Authentication success for email: {}", email);
 
-        // Explicitly check if user exists before creating refresh token
-        try {
-            User user = userService.getUserByEmail(email);
-            log.info("User found in AuthenticationSuccessHandler: {}", user.getEmail());
-        } catch (ResourceNotFoundException e) {
-            log.error("User not found in AuthenticationSuccessHandler after OAuth2 process: {}", email);
-            // This indicates a serious issue if user was supposed to be provisioned
-            throw e; // Re-throw to propagate the error
-        }
+        User user = userService.processOAuth2User(oAuth2User);
 
-        String accessToken = jwtService.generateAccessToken(email);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(email);
+        String accessToken = jwtService.generateAccessToken(user.getEmail());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
         addCookie(response, "access_token", accessToken, jwtProperties.accessTokenExpirationMs() / 1000);
         addCookie(response, "refresh_token", refreshToken.getToken(), jwtProperties.refreshTokenExpirationMs() / 1000);

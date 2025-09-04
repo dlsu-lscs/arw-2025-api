@@ -1,18 +1,17 @@
 ---
 services:
   db:
-    image: mysql:8.0
-    container_name: arw-2025-db
+    image: postgres:16-alpine
+    container_name: arw-2025-postgres-db
     ports:
-      - "3306:3306"
+      - "5432:5432"
     environment:
-      - MYSQL_DATABASE=arw-2025
-      - MYSQL_USER=arw-2025
-      - MYSQL_PASSWORD=arw-2025
-      - MYSQL_ROOT_PASSWORD=root
+      - POSTGRES_DB=arw-2025
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     volumes:
-      - mysql_data:/var/lib/mysql
+      - pg_data:/var/lib/postgresql/data
 
 volumes:
-  mysql_data:
+  pg_data:
 

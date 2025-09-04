@@ -1,6 +1,5 @@
 package org.dlsulscs.arw.organization.controller;
 
-import org.dlsulscs.arw.organization.dto.OrganizationListResponseDto;
 import org.dlsulscs.arw.organization.dto.OrganizationCreateUpdateRequestDto;
 import org.dlsulscs.arw.organization.model.Organization;
 import org.dlsulscs.arw.organization.service.OrganizationService;
@@ -29,7 +28,7 @@ public class OrganizationController {
      * Gets all organizations, with an option to filter by cluster.
      * 
      * - GET /api/orgs -> returns all organizations.
-     * - GET /api/orgs?cluster=SomeCluster&page=1&pageSize=5 -> returns all
+     * - GET /api/orgs?cluster=SomeCluster&page=0&pageSize=5 -> returns all
      * organizations in that
      * cluster.
      *
