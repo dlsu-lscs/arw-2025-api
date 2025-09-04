@@ -4,6 +4,30 @@ This document outlines a step-by-step plan to build the ARW 2025 API, focusing o
 
 ---
 
+## Phase 0: Database Setup & Configuration
+
+Goal: Configure the connection to the MySQL database and establish a clear process for schema management.
+
+1.  **Database Container (Docker):**
+    - The project uses a MySQL database running inside a Docker container, defined in the `compose.yaml` file.
+    - The database is started by running `docker-compose up -d`. This ensures a consistent and isolated database environment for development.
+
+2.  **Spring Boot Datasource Configuration:**
+    - The connection details are configured in `src/main/resources/application.properties`.
+    - Key properties include:
+        - `spring.datasource.url`: The JDBC connection string for the MySQL database.
+        - `spring.datasource.username`: The database username.
+        - `spring.datasource.password`: The database password.
+    - Spring Boot automatically uses these properties to create a `DataSource` bean, which is used by Spring Data JPA.
+
+3.  **Schema Management (Flyway):**
+    - This project uses **Flyway** to manage all database schema changes.
+    - On application startup, Flyway automatically checks for new SQL migration scripts in the `src/main/resources/db/migration/` directory.
+    - Migration files **must** follow the naming convention `V<VERSION>__<DESCRIPTION>.sql` (e.g., `V2__Add_new_table.sql`).
+    - This approach ensures that schema changes are version-controlled, repeatable, and automated. The initial schema is defined in `V1__Initial_Schema.sql`.
+
+---
+
 ## Phase 1: Project Structure & Core Domain
 
 Goal: Establish a clean, domain-driven project structure and create the core JPA entities and repositories.
@@ -30,7 +54,7 @@ Goal: Establish a clean, domain-driven project structure and create the core JPA
 4.  **Target Project Structure:**
     Once complete, the project structure will look like this, promoting scalability and clear separation of concerns within each feature:
 
-    ```
+    '''
     src/main/java/org/dlsulscs/arw/
     ├── auth/
     │   ├── controller/
@@ -63,7 +87,7 @@ Goal: Establish a clean, domain-driven project structure and create the core JPA
     │       └── OrganizationService.java
     ├── ... (other domains like college, publication, user)
     └── Arw2025ApiApplication.java
-    ```
+    '''
 
 ---
 
@@ -159,3 +183,14 @@ Goal: Document the development process for current and future developers.
     - **Step 5 (Test):** Write unit or integration tests for the new feature.
 
 This workflow is often called "bottom-up" (from the database layer up to the controller layer) and is a very common and effective way to develop Spring Boot applications.
+
+## Essential Endpoints
+
+- `/api/orgs`
+  - get all orgs -> randomized on client-side
+
+- get all orgs by a specific cluster (category) -> also randomized on client-side
+  
+
+- `/api/orgs/search?q=someOrg`
+  - search orgs -> can search by `name`, `cluster.name`, or `short_name`

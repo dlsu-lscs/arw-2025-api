@@ -70,10 +70,10 @@ clusters (like categories to classify orgs)
 
 ## **Production API Readiness Checklist**
 
-- [ ] Use DTOs for requests and responses
+- [x] Use DTOs for requests and responses
 - [ ] Validate all incoming data (use `@Valid`, custom validators)
 - [ ] Implement global error handling (`@ControllerAdvice`)
-- [ ] Secure endpoints (authentication, authorization)
+- [x] Secure endpoints (authentication, authorization)
 - [ ] Document APIs (OpenAPI/Swagger)
 - [ ] Write unit and integration tests
 - [ ] Log requests, responses, and errors
@@ -86,3 +86,6 @@ clusters (like categories to classify orgs)
 - [ ] Rate limiting/throttling (if needed)
 - [ ] Graceful shutdown and resource cleanup
 
+
+login via google oauth -> if valid, then generate & return jwt (access token) and refresh token, store both in http-only cookie
+  - now all request is intercepted by the JWT filter

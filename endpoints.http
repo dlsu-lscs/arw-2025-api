@@ -1,0 +1,135 @@
+### Variables
+@baseUrl = http://localhost:8080
+@token = <your_jwt_token>
+
+###
+### Organizations
+###
+
+# Get all organizations
+GET {{baseUrl}}/api/orgs
+Authorization: Bearer {{token}}
+
+###
+
+# Get all organizations in a specific cluster
+GET {{baseUrl}}/api/orgs?cluster=ENGAGE
+Authorization: Bearer {{token}}
+
+###
+
+# Search for organizations
+GET {{baseUrl}}/api/orgs/search?q=cs
+Authorization: Bearer {{token}}
+
+###
+
+# Get organization by ID
+GET {{baseUrl}}/api/orgs/1
+Authorization: Bearer {{token}}
+
+###
+
+# Get organization by name
+GET {{baseUrl}}/api/orgs/name/Computer-Society
+Authorization: Bearer {{token}}
+
+###
+
+# Create a new organization
+POST {{baseUrl}}/api/orgs
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "New Test Org",
+  "shortName": "NTO",
+  "about": "About the new test organization.",
+  "fee": 50.00,
+  "bundleFee": 40.00,
+  "gformsUrl": "https://forms.gle/neworg",
+  "facebookUrl": "https://facebook.com/neworg",
+  "mission": "Our mission.",
+  "vision": "Our vision.",
+  "tagline": "A new beginning.",
+  "clusterName": "ENGAGE",
+  "collegeName": "CCS"
+}
+
+###
+
+# Partially update an existing organization
+PATCH {{baseUrl}}/api/orgs/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "tagline": "An updated tagline for the organization."
+}
+
+###
+### Clusters
+###
+
+# Get all clusters
+GET {{baseUrl}}/api/clusters
+Authorization: Bearer {{token}}
+
+###
+
+# Get cluster by ID
+GET {{baseUrl}}/api/clusters/1
+Authorization: Bearer {{token}}
+
+###
+
+# Get cluster by name
+GET {{baseUrl}}/api/clusters/name/ENGAGE
+Authorization: Bearer {{token}}
+
+###
+
+# Create a new cluster
+POST {{baseUrl}}/api/clusters
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "New Cluster",
+  "description": "A brand new cluster for organizations."
+}
+
+###
+
+# Update a cluster
+PUT {{baseUrl}}/api/clusters/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Updated Cluster Name",
+  "description": "Updated description."
+}
+
+###
+
+# Delete a cluster
+DELETE {{baseUrl}}/api/clusters/1
+Authorization: Bearer {{token}}
+
+###
+### Publications
+###
+
+# Get publications by organization name
+GET {{baseUrl}}/api/pubs/by-org-name?orgName=Computer-Society
+Authorization: Bearer {{token}}
+
+###
+### Users
+###
+
+# Get user by email
+GET {{baseUrl}}/api/users?email=user@example.com
+Authorization: Bearer {{token}}
+

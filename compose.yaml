@@ -1,3 +1,4 @@
+---
 services:
   db:
     image: mysql:8.0
@@ -14,3 +15,4 @@ services:
 
 volumes:
   mysql_data:
+
