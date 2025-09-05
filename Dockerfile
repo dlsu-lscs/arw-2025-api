@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM maven:3.9-eclipse-temurin-21 AS build
+FROM maven:3.8.8-eclipse-temurin-21 AS build
 
 # Set the working directory
 WORKDIR /app
@@ -24,7 +24,7 @@ FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
 # Copy the executable JAR from the build stage
-COPY --from=build /app/target/arw-2025-api-*.jar /app/app.jar
+COPY --from=build /app/target/arw-0.0.1-SNAPSHOT.jar /app/app.jar
 
 # Expose the application port
 EXPOSE 8080
