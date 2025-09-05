@@ -12,6 +12,29 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: arw-2025-api
+    ports:
+      - "8080:8080"
+    environment:
+      # Database connection
+      - DATABASE_URL=jdbc:postgresql://db:5432/arw-2025
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
+      # JWT Properties
+      - JWT_SECRET=dummy-secret-key-that-is-long-enough-to-be-secure
+      - FRONTEND_REDIRECT_URI=http://localhost:8080/api/auth/test/authenticated
+      # Google OAuth2 Credentials (replace with your actual credentials)
+      - GOOGLE_CLIENT_ID=
+      - GOOGLE_CLIENT_SECRET=
+    depends_on:
+      - db
+    # Activate the 'dev' profile to load mock data and enable debug logging
+    command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=dev"]
+
 volumes:
   pg_data:
 
