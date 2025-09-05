@@ -21,14 +21,12 @@ public class RefreshTokenService {
     private static final Logger log = LoggerFactory.getLogger(RefreshTokenService.class);
 
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserRepository userRepository;
     private final JwtProperties jwtProperties;
 
     @Autowired
     public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UserRepository userRepository,
             JwtProperties jwtProperties) {
         this.refreshTokenRepository = refreshTokenRepository;
-        this.userRepository = userRepository;
         this.jwtProperties = jwtProperties;
     }
 

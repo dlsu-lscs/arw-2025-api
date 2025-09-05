@@ -21,9 +21,9 @@ services:
       - "8080:8080"
     environment:
       # Database connection
-      - DATABASE_URL=jdbc:postgresql://db:5432/arw-2025
-      - DATABASE_USERNAME=postgres
-      - DATABASE_PASSWORD=postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/arw-2025
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
       # JWT Properties
       - JWT_SECRET=dummy-secret-key-that-is-long-enough-to-be-secure
       - FRONTEND_REDIRECT_URI=http://localhost:8080/api/auth/test/authenticated
