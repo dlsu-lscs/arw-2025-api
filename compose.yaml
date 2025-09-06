@@ -26,14 +26,15 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
       # JWT Properties
       - JWT_SECRET=dummy-secret-key-that-is-long-enough-to-be-secure
-      - FRONTEND_REDIRECT_URI=http://localhost:8080/api/auth/test/authenticated
+      - FRONTEND_REDIRECT_URI=http://localhost:8080/api/auth/test/authenticated # NOTE: change to frontend redirect url when developing locally with frontend app
+      # - FRONTEND_REDIRECT_URI=https://arw-dev.app.dlsu-lscs.org
       # Google OAuth2 Credentials (replace with your actual credentials)
       - GOOGLE_CLIENT_ID=
       - GOOGLE_CLIENT_SECRET=
     depends_on:
       - db
     # Activate the 'dev' profile to load mock data and enable debug logging
-    command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=dev"]
+    command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=local"]
 
 volumes:
   pg_data:
