@@ -52,7 +52,7 @@ public class AuthController {
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
-                    String newAccessToken = jwtService.generateAccessToken(user.getEmail());
+                    String newAccessToken = jwtService.generateAccessToken(user);
                     ResponseCookie accessTokenCookie = cookieService.createCookie("access_token", newAccessToken, (int) (jwtProperties.accessTokenExpirationMs() / 1000));
                     response.addHeader("Set-Cookie", accessTokenCookie.toString());
                     return ResponseEntity.ok().body("Access token refreshed");

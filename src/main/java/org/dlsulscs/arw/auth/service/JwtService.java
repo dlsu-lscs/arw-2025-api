@@ -4,12 +4,15 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.dlsulscs.arw.config.properties.JwtProperties;
+import org.dlsulscs.arw.user.model.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -23,18 +26,34 @@ public class JwtService {
         this.key = Keys.hmacShaKeyFor(jwtProperties.secret().getBytes());
     }
 
-    public String generateAccessToken(Authentication authentication) {
-        UserDetails user = (UserDetails) authentication.getPrincipal();
-        return generateToken(user.getUsername(), jwtProperties.accessTokenExpirationMs());
+    public String generateAccessToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("name", user.getName());
+        claims.put("picture", user.getDisplay_picture());
+        return generateToken(claims, user.getEmail(), jwtProperties.accessTokenExpirationMs());
     }
 
     public String generateAccessToken(String username) {
-        return generateToken(username, jwtProperties.accessTokenExpirationMs());
+        return generateToken(new HashMap<>(), username, jwtProperties.accessTokenExpirationMs());
     }
 
     public String generateRefreshToken(Authentication authentication) {
         UserDetails user = (UserDetails) authentication.getPrincipal();
         return generateToken(user.getUsername(), jwtProperties.refreshTokenExpirationMs());
+    }
+
+    public String generateRefreshToken(String username) {
+        return generateToken(new HashMap<>(), username, jwtProperties.refreshTokenExpirationMs());
+    }
+
+    private String generateToken(Map<String, Object> extraClaims, String username, long expirationMs) {
+        return Jwts.builder()
+                .claims(extraClaims)
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expirationMs))
+                .signWith(key)
+                .compact();
     }
 
     private String generateToken(String username, long expirationMs) {
@@ -65,7 +84,7 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(key)
                 .build()

@@ -58,7 +58,7 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 
         User user = userService.processOAuth2User(oAuth2User);
 
-        String accessToken = jwtService.generateAccessToken(user.getEmail());
+        String accessToken = jwtService.generateAccessToken(user);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
         ResponseCookie accessTokenCookie = cookieService.createCookie("access_token", accessToken,

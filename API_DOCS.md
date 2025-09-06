@@ -50,7 +50,7 @@ Login is handled via an OAuth2 flow with Google. The primary entry point for a c
 `GET /oauth2/authorization/google`
 
 Upon successful authentication, the API will set two `HttpOnly` cookies:
-- `access_token`: A short-lived JWT for authenticating requests.
+- `access_token`: A short-lived JWT for authenticating requests. Contains the user's email (`sub`), name, and display picture as claims.
 - `refresh_token`: A long-lived token used to get a new access token.
 
 The user will then be redirected to the frontend URL specified in the application properties.
