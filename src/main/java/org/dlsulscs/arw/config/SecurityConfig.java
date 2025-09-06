@@ -1,6 +1,7 @@
 package org.dlsulscs.arw.config;
 
 import org.dlsulscs.arw.auth.filter.JwtAuthenticationFilter;
+import org.dlsulscs.arw.auth.filter.RedirectAuthenticatedUserFilter;
 import org.dlsulscs.arw.auth.service.AuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,15 +25,17 @@ public class SecurityConfig {
 
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RedirectAuthenticatedUserFilter redirectAuthenticatedUserFilter;
 
     @Value("${app.cors.allowed-origins}")
     private String[] allowedOrigins;
 
     @Autowired
     public SecurityConfig(AuthenticationSuccessHandler authenticationSuccessHandler,
-            JwtAuthenticationFilter jwtAuthenticationFilter) {
+            JwtAuthenticationFilter jwtAuthenticationFilter, RedirectAuthenticatedUserFilter redirectAuthenticatedUserFilter) {
         this.authenticationSuccessHandler = authenticationSuccessHandler;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.redirectAuthenticatedUserFilter = redirectAuthenticatedUserFilter;
     }
 
     @Bean
@@ -49,6 +52,7 @@ public class SecurityConfig {
                     oauth2.successHandler(authenticationSuccessHandler);
                 });
 
+        http.addFilterBefore(redirectAuthenticatedUserFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
