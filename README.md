@@ -11,51 +11,58 @@ This is the backend API for the Annual Recruitment Week (ARW) 2025 of De La Sall
 - Java 21
 - Docker & Docker Compose
 
-### Running in Development (with Mock Data)
+### Environments & Configuration
+
+This project uses Spring Profiles to manage environment-specific configurations. The configuration for each environment is defined in a corresponding `application-{profile}.properties` file.
+
+-   **`local`**: For local development on `localhost`. Contains settings for local database connections, mock data, relaxed cookie settings, and local CORS origins.
+-   **`dev`**: For the hosted development environment (`arw-dev.api.dlsu-lscs.org`).
+-   **`prod`**: For the production environment.
+
+To activate a specific profile, set the `SPRING_PROFILES_ACTIVE` environment variable. For example: `export SPRING_PROFILES_ACTIVE=dev`.
+
+When deploying with Docker or to a service like Coolify, you set this environment variable in your service configuration. All other environment-specific properties (like cookie domains, CORS origins, etc.) are loaded from the profile-specific properties file. You only need to provide secrets (like database credentials and API keys) as environment variables.
+
+### Running for Local Development
 
 1.  **Start the Database:**
-    The project uses a MySQL database running in a Docker container for development. Start it using Docker Compose:
+    The project uses a PostgreSQL database running in a Docker container for development. Start it using Docker Compose:
     ```bash
     docker-compose up -d
     ```
 
-2.  **Run the Application with the `dev` profile:**
-    To run the application and load the mock data, you must activate the `dev` profile. This tells Flyway to run the scripts in `src/main/resources/db/migration/dev`.
+2.  **Run the Application with the `local` profile:**
+    To run the application and load the mock data, you must activate the `local` profile.
     ```bash
-    ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+    ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
     ```
     The API will be available at `http://localhost:8080`.
 
-> [!NOTE]
-> On deploying dev environment (not locally) then set `SPRING_PROFILES_ACTIVE=dev`, especially when deploying with Docker.
-
-### Running in Production (or without Mock Data)
-
-By default (without an active profile), the application runs in a production-like mode where mock data is **not** loaded.
-
-**Method 1: Running the JAR File**
+### Building for an Environment (dev/prod)
 
 1.  **Build the Application JAR:**
     Package the application into an executable JAR file.
     ```bash
     ./mvnw clean install
     ```
+    The resulting JAR file will be in the `target/` directory.
 
-2.  **Run the Production JAR:**
-    Run the application, providing all secrets as environment variables. **Do not** activate any profile to ensure a clean, production-ready database state.
+2.  **Run the JAR with the correct profile:**
+    Run the application, providing all secrets as environment variables and activating the desired profile.
     ```bash
-    export SPRING_DATASOURCE_URL=jdbc:postgresql://your-prod-db-host:5432/your-prod-db
-    export SPRING_DATASOURCE_USERNAME=your-prod-user
-    export SPRING_DATASOURCE_PASSWORD=your-prod-password
-    export GOOGLE_CLIENT_ID=your-google-client-id
-    export GOOGLE_CLIENT_SECRET=your-google-client-secret
-    export FRONTEND_REDIRECT_URI=https://your-production-frontend.com/auth/callback
-    export JWT_SECRET=your-jwt-secret
+    # Example for 'dev' environment
+    export SPRING_PROFILES_ACTIVE=dev
+    export SPRING_DATASOURCE_URL=...
+    export SPRING_DATASOURCE_USERNAME=...
+    export SPRING_DATASOURCE_PASSWORD=...
+    export GOOGLE_CLIENT_ID=...
+    export GOOGLE_CLIENT_SECRET=...
+    export JWT_SECRET=...
 
     java -jar target/arw-2025-api-*.jar
     ```
 
-**Method 2: Running as a Docker Container**
+### Running with Docker
 
 1.  **Build the Docker Image:**
     ```bash
@@ -64,16 +71,17 @@ By default (without an active profile), the application runs in a production-lik
     ```
 
 2.  **Run the Docker Container:**
-    Run the container, passing all secrets and configuration as environment variables. See the **Production Environment Variables** section below for a complete list of variables to set.
+    Run the container, passing secrets and the active profile as environment variables.
     ```bash
+    # Example for 'dev' environment
     docker run -p 8080:8080 \
-      -e SPRING_DATASOURCE_URL=jdbc:postgresql://your-prod-db-host:5432/your-prod-db \
-      -e SPRING_DATASOURCE_USERNAME=your-prod-user \
-      -e SPRING_DATASOURCE_PASSWORD=your-prod-password \
-      -e GOOGLE_CLIENTID=your-google-client-id \
-      -e GOOGLE_CLIENT_SECRET=your-google-client-secret \
-      -e FRONTEND_REDIRECT_URI=https://your-production-frontend.com/auth/callback \
-      -e JWT_SECRET=your-jwt-secret \
+      -e SPRING_PROFILES_ACTIVE=dev \
+      -e SPRING_DATASOURCE_URL=... \
+      -e SPRING_DATASOURCE_USERNAME=... \
+      -e SPRING_DATASOURCE_PASSWORD=... \
+      -e GOOGLE_CLIENT_ID=... \
+      -e GOOGLE_CLIENT_SECRET=... \
+      -e JWT_SECRET=... \
       arw-2025-api:latest
     ```
 
