@@ -25,13 +25,14 @@ When deploying with Docker or to a service like Coolify, you set this environmen
 
 ### Running for Local Development
 
-1.  **Start the Database:**
-    The project uses a PostgreSQL database running in a Docker container for development. Start it using Docker Compose:
+1.  **Start the Database & API:**
+    The project uses a PostgreSQL database and API running in a Docker container for development. Start it using Docker Compose:
     ```bash
     docker-compose up -d
     ```
 
-2.  **Run the Application with the `local` profile:**
+2.  **Or run the Application with the `local` profile (standalone without database):**
+    -  you can edit `SPRING_DATASOURCE_URL` in `application-local.properties` file for your database URL.
     To run the application and load the mock data, you must activate the `local` profile.
     ```bash
     ./mvnw spring-boot:run -Dspring-boot.run.profiles=local

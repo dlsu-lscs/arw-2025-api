@@ -35,6 +35,14 @@ This document provides a reference for the available RESTful endpoints.
 
 ## Authentication
 
+**Authentication is handled via OAuth2 Google login:**
+
+- Upon successful login, users will be redirected to the frontend `/` (root) URI
+
+- At the same time, session cookies (JWT `access_token` and `refresh_token`) will be created and set - see [Access Token Refresh Strategy for Frontend](#access-token-refresh-strategy-for-frontend) for more information
+  - `access_token` (JWT) - 15 mins TTL
+  - `refresh_token` - 7 days TTL
+
 ### Login
 
 Login is handled via an OAuth2 flow with Google. The primary entry point for a client application is to redirect the user to:
