@@ -1,19 +1,20 @@
 package org.dlsulscs.arw.auth.service;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.dlsulscs.arw.auth.model.RefreshToken;
 import org.dlsulscs.arw.config.properties.JwtProperties;
-import org.dlsulscs.arw.user.model.User; // Added import for User
-import org.dlsulscs.arw.user.service.UserService; // Added import for UserService
+import org.dlsulscs.arw.user.model.User;
+import org.dlsulscs.arw.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import org.slf4j.Logger;
@@ -28,17 +29,19 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
     private final UserService userService;
     private final JwtProperties jwtProperties;
     private final String redirectUri;
+    private final CookieService cookieService;
 
     @Autowired
     public AuthenticationSuccessHandler(JwtService jwtService, RefreshTokenService refreshTokenService,
             UserService userService,
             JwtProperties jwtProperties,
-            @Value("${app.oauth2.redirect-uri}") String redirectUri) {
+            @Value("${app.oauth2.redirect-uri}") String redirectUri, CookieService cookieService) {
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
         this.userService = userService;
         this.jwtProperties = jwtProperties;
         this.redirectUri = redirectUri;
+        this.cookieService = cookieService;
     }
 
     /**
@@ -58,19 +61,15 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
         String accessToken = jwtService.generateAccessToken(user.getEmail());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
-        addCookie(response, "access_token", accessToken, jwtProperties.accessTokenExpirationMs() / 1000);
-        addCookie(response, "refresh_token", refreshToken.getToken(), jwtProperties.refreshTokenExpirationMs() / 1000);
+        ResponseCookie accessTokenCookie = cookieService.createCookie("access_token", accessToken,
+                jwtProperties.accessTokenExpirationMs() / 1000);
+        ResponseCookie refreshTokenCookie = cookieService.createCookie("refresh_token", refreshToken.getToken(),
+                jwtProperties.refreshTokenExpirationMs() / 1000);
+
+        response.addHeader("Set-Cookie", accessTokenCookie.toString());
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         String targetUrl = UriComponentsBuilder.fromUriString(redirectUri).build().toUriString();
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
-    }
-
-    private void addCookie(HttpServletResponse response, String name, String value, long maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge((int) maxAge);
-        // cookie.setSecure(true); // Enable this in production when using HTTPS
-        response.addCookie(cookie);
     }
 }

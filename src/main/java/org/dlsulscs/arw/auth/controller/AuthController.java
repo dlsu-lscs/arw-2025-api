@@ -1,12 +1,13 @@
 package org.dlsulscs.arw.auth.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.dlsulscs.arw.auth.model.RefreshToken;
+import org.dlsulscs.arw.auth.service.CookieService;
 import org.dlsulscs.arw.auth.service.JwtService;
 import org.dlsulscs.arw.auth.service.RefreshTokenService;
 import org.dlsulscs.arw.config.properties.JwtProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,27 +22,25 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
+    private final CookieService cookieService;
 
     @Autowired
-    public AuthController(RefreshTokenService refreshTokenService, JwtService jwtService, JwtProperties jwtProperties) {
+    public AuthController(RefreshTokenService refreshTokenService, JwtService jwtService, JwtProperties jwtProperties, CookieService cookieService) {
         this.refreshTokenService = refreshTokenService;
         this.jwtService = jwtService;
         this.jwtProperties = jwtProperties;
+        this.cookieService = cookieService;
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@CookieValue(name = "refresh_token") String token, HttpServletResponse response) {
         refreshTokenService.deleteByToken(token);
 
-        Cookie accessTokenCookie = new Cookie("access_token", null);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(0);
-        response.addCookie(accessTokenCookie);
+        ResponseCookie accessTokenCookie = cookieService.createLogoutCookie("access_token");
+        ResponseCookie refreshTokenCookie = cookieService.createLogoutCookie("refresh_token");
 
-        Cookie refreshTokenCookie = new Cookie("refresh_token", null);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(0);
-        response.addCookie(refreshTokenCookie);
+        response.addHeader("Set-Cookie", accessTokenCookie.toString());
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         return ResponseEntity.ok("Logout successful");
     }
@@ -54,11 +53,8 @@ public class AuthController {
                 .map(RefreshToken::getUser)
                 .map(user -> {
                     String newAccessToken = jwtService.generateAccessToken(user.getEmail());
-                    Cookie cookie = new Cookie("access_token", newAccessToken);
-                    cookie.setPath("/");
-                    cookie.setHttpOnly(true);
-                    cookie.setMaxAge((int) (jwtProperties.accessTokenExpirationMs() / 1000));
-                    response.addCookie(cookie);
+                    ResponseCookie accessTokenCookie = cookieService.createCookie("access_token", newAccessToken, (int) (jwtProperties.accessTokenExpirationMs() / 1000));
+                    response.addHeader("Set-Cookie", accessTokenCookie.toString());
                     return ResponseEntity.ok().body("Access token refreshed");
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
