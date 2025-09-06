@@ -9,6 +9,7 @@ COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 
 # Download dependencies
+RUN chmod +x mvnw
 RUN ./mvnw dependency:go-offline
 
 # Copy the rest of the application source code
@@ -23,8 +24,7 @@ FROM eclipse-temurin:21-jre-jammy
 # Set the working directory
 WORKDIR /app
 
-# Install curl for healthcheck
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
 
 # Copy the executable JAR from the build stage
 COPY --from=build /app/target/arw-0.0.1-SNAPSHOT.jar /app/app.jar
@@ -33,8 +33,8 @@ COPY --from=build /app/target/arw-0.0.1-SNAPSHOT.jar /app/app.jar
 EXPOSE 8080
 
 # Add healthcheck
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://127.0.0.1:8080/actuator/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
 
 # Set the entrypoint to run the application
 # The production profile should be activated via Docker run command or Compose file

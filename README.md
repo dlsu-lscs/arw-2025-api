@@ -44,9 +44,9 @@ By default (without an active profile), the application runs in a production-lik
 2.  **Run the Production JAR:**
     Run the application, providing all secrets as environment variables. **Do not** activate any profile to ensure a clean, production-ready database state.
     ```bash
-    export DATABASE_URL=jdbc:postgresql://your-prod-db-host:5432/your-prod-db
-    export DATABASE_USERNAME=your-prod-user
-    export DATABASE_PASSWORD=your-prod-password
+    export SPRING_DATASOURCE_URL=jdbc:postgresql://your-prod-db-host:5432/your-prod-db
+    export SPRING_DATASOURCE_USERNAME=your-prod-user
+    export SPRING_DATASOURCE_PASSWORD=your-prod-password
     export GOOGLE_CLIENT_ID=your-google-client-id
     export GOOGLE_CLIENT_SECRET=your-google-client-secret
     export FRONTEND_REDIRECT_URI=https://your-production-frontend.com/auth/callback
@@ -67,9 +67,9 @@ By default (without an active profile), the application runs in a production-lik
     Run the container, passing all secrets and configuration as environment variables. See the **Production Environment Variables** section below for a complete list of variables to set.
     ```bash
     docker run -p 8080:8080 \
-      -e DATABASE_URL=jdbc:postgresql://your-prod-db-host:5432/your-prod-db \
-      -e DATABASE_USERNAME=your-prod-user \
-      -e DATABASE_PASSWORD=your-prod-password \
+      -e SPRING_DATASOURCE_URL=jdbc:postgresql://your-prod-db-host:5432/your-prod-db \
+      -e SPRING_DATASOURCE_USERNAME=your-prod-user \
+      -e SPRING_DATASOURCE_PASSWORD=your-prod-password \
       -e GOOGLE_CLIENTID=your-google-client-id \
       -e GOOGLE_CLIENT_SECRET=your-google-client-secret \
       -e FRONTEND_REDIRECT_URI=https://your-production-frontend.com/auth/callback \
@@ -145,9 +145,9 @@ When running the application in production (either as a JAR or a Docker containe
 
 | Environment Variable |
 | -------------------- | 
-| `DATABASE_URL`       |
-| `DATABASE_USERNAME`  |
-| `DATABASE_PASSWORD`  |
+| `SPRING_DATASOURCE_URL`       |
+| `SPRING_DATASOURCE_USERNAME`  |
+| `SPRING_DATASOURCE_PASSWORD`  |
 | `GOOGLE_CLIENT_ID`   |
 | `GOOGLE_CLIENT_SECRET`|
 | `FRONTEND_REDIRECT_URI`|

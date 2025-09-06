@@ -4,7 +4,8 @@ import org.dlsulscs.arw.user.model.User;
 import org.dlsulscs.arw.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,15 +20,15 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/current")
+    public ResponseEntity<User> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserByEmail(userDetails.getUsername());
+        return ResponseEntity.ok(user);
+    }
+
     @GetMapping
     public ResponseEntity<User> getUserByEmail(String email) {
         User user = this.userService.getUserByEmail(email);
         return ResponseEntity.ok(user);
     }
-
-    // TODO: here or in auth domain package:
-    // TODO: 1. /login -> google oauth that creates new user (insert to database)
-    // - maybe return JWT with roles and email
-    // TODO: 2. /logout -> invalidate session by setting cookie ttl to 0 for both
-    // access and refresh token
 }
