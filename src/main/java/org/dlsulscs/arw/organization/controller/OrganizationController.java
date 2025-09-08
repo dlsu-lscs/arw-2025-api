@@ -39,8 +39,9 @@ public class OrganizationController {
     public ResponseEntity<Page<OrganizationResponseDto>> getOrganizations(
             @RequestParam(required = false) String cluster,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer pageSize) {
-        Page<Organization> orgs = organizationService.getOrganizations(cluster, page, pageSize);
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) String seed) {
+        Page<Organization> orgs = organizationService.getOrganizations(cluster, page, pageSize, seed);
         Page<OrganizationResponseDto> orgsDto = orgs.map(this::mapToOrganizationResponseDto);
         return ResponseEntity.ok(orgsDto);
     }

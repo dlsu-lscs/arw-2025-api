@@ -14,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class OrganizationService {
 
@@ -29,12 +31,16 @@ public class OrganizationService {
         this.collegeService = collegeService;
     }
 
-    public Page<Organization> getOrganizations(String clusterName, Integer page, Integer pageSize) {
+    public Page<Organization> getOrganizations(String clusterName, Integer page, Integer pageSize, String seed) {
+        // For pagination to work correctly, the client MUST send the same seed for each subsequent request ("see more").
+        // If no seed is provided, a new random one is generated for each call, which will break page consistency
+        // and result in a different random order on every request.
+        String effectiveSeed = (seed != null && !seed.isEmpty()) ? seed : UUID.randomUUID().toString();
         Pageable pageable = PageRequest.of(page, pageSize);
         if (clusterName != null && !clusterName.isEmpty()) {
-            return organizationRepository.findAllByClusterName(clusterName, pageable);
+            return organizationRepository.findAllByClusterNameWithSeed(clusterName, pageable, effectiveSeed);
         }
-        return this.organizationRepository.findAll(pageable);
+        return this.organizationRepository.findAllWithSeed(pageable, effectiveSeed);
     }
 
     public Page<Organization> searchOrganizations(String query, Integer page, Integer pageSize) {

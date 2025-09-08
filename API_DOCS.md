@@ -148,13 +148,14 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 
 - **Method:** `GET`
 - **Path:** `/api/orgs`
-- **Description:** Retrieves a paginated list of all organizations. Can be filtered by cluster.
+- **Description:** Retrieves a paginated and randomized list of all organizations. Can be filtered by cluster.
 - **Query Parameters:**
   - `cluster` (String, optional): The name of the cluster to filter by (e.g., `/api/orgs?cluster=ENGAGE`).
   - `page` (Integer, optional, default: 0): The page number to retrieve.
   - `pageSize` (Integer, optional, default: 10): The number of items per page.
+  - `seed` (String, optional): A seed value for randomizing the order of organizations. To ensure consistent pagination (e.g., for a "see more" feature), the client **must** generate a seed once and send the same seed with every subsequent paginated request. If no seed is provided, the order will be different on every request, breaking pagination.
 - **Response:** A `Page` object containing an array of `OrganizationResponseDto` objects and pagination details.
-- **Example Response for `/api/orgs?cluster=ENGAGE&page=0`:**
+- **Example Response for `/api/orgs?cluster=ENGAGE&page=0&seed=clientGeneratedSeed`:**
 ```json
 {
     "content": [

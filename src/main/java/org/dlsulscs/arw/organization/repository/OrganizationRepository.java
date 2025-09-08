@@ -31,4 +31,14 @@ public interface OrganizationRepository extends JpaRepository<Organization, Inte
     @Query("SELECT o FROM Organization o WHERE lower(o.cluster.name) = lower(:clusterName)")
     Page<Organization> findAllByClusterName(@Param("clusterName") String clusterName, Pageable pageable);
 
+    @Query(value = "SELECT * FROM orgs ORDER BY md5(id::text || :seed)",
+        countQuery = "SELECT count(*) FROM orgs",
+        nativeQuery = true)
+    Page<Organization> findAllWithSeed(Pageable pageable, @Param("seed") String seed);
+
+    @Query(value = "SELECT o.* FROM orgs o JOIN clusters c ON o.cluster_id = c.id WHERE lower(c.name) = lower(:clusterName) ORDER BY md5(o.id::text || :seed)",
+        countQuery = "SELECT count(o.id) FROM orgs o JOIN clusters c ON o.cluster_id = c.id WHERE lower(c.name) = lower(:clusterName)",
+        nativeQuery = true)
+    Page<Organization> findAllByClusterNameWithSeed(@Param("clusterName") String clusterName, Pageable pageable, @Param("seed") String seed);
+
 }
