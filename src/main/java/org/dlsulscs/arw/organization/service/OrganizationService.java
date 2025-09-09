@@ -37,11 +37,21 @@ public class OrganizationService {
      * and ordered randomly using a seed for consistent pagination.
      *
      * <p>
-     * For consistent pagination, the same seed value must be provided for each
-     * subsequent request.
-     * If no seed is provided, a new random seed is generated, which will result in
-     * a different
-     * random order on every request and break page consistency.
+     * This method is designed to support "See More" or infinite scroll pagination
+     * on the frontend.
+     * For this to work correctly, the frontend must:
+     * <ol>
+     * <li>Generate a single unique {@code seed} value when the user first visits
+     * the page.</li>
+     * <li>Store this {@code seed} in its state.</li>
+     * <li>Send the <strong>same</strong> {@code seed} with every subsequent request
+     * for the next page.</li>
+     * <li>Increment the {@code page} parameter for each "See More" click (e.g.,
+     * page=0, page=1, page=2...).</li>
+     * </ol>
+     * If no seed is provided, a new random one is generated for each call. This
+     * will break page consistency,
+     * resulting in a different random order on every request.
      * </p>
      *
      * @param clusterName the name of the cluster to filter organizations by
@@ -52,7 +62,7 @@ public class OrganizationService {
      *                    paginated request to maintain order consistency
      * @return a page of organizations, filtered and randomly ordered by the
      *         provided seed
-     **/
+     */
     public Page<Organization> getOrganizations(String clusterName, Integer page, Integer pageSize, String seed) {
         String effectiveSeed = (seed != null && !seed.isEmpty()) ? seed : UUID.randomUUID().toString();
         Pageable pageable = PageRequest.of(page, pageSize);

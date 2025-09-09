@@ -166,10 +166,27 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Path:** `/api/orgs`
 - **Description:** Retrieves a paginated and randomized list of all organizations. Can be filtered by cluster.
 - **Query Parameters:**
-  - `cluster` (String, optional): The name of the cluster to filter by (e.g., `Engage`).
+  - `cluster` (String, optional): The name of the cluster to filter by (e.g., `ENGAGE`).
   - `page` (Integer, optional, default: 0): The page number to retrieve.
   - `pageSize` (Integer, optional, default: 10): The number of items per page.
   - `seed` (String, optional): A seed value for randomizing the order of organizations. To ensure consistent pagination (e.g., for a "see more" feature), the client **must** generate a seed once and send the same seed with every subsequent paginated request. If no seed is provided, the order will be different on every request, breaking pagination.
+
+#### Implementing "See More" Pagination (Frontend Guide)
+
+This endpoint is designed to support a "See More" or "Infinite Scroll" style of pagination. Here is the recommended frontend logic:
+
+1.  **On Initial Page Load:**
+    *   Generate a single, unique `seed` string (e.g., using a UUID library) and store it in the page's state.
+    *   Keep track of the current page number in the state, initialized to `0`.
+    *   Make the first API call: `GET /api/orgs?page=0&pageSize=10&seed=your-generated-seed`
+    *   Display the 10 organizations from the response.
+
+2.  **When the User Clicks "See More":**
+    *   Increment the page number in the state (e.g., `currentPage` becomes `1`).
+    *   Make the next API call, reusing the **same seed** but with the **new page number**: `GET /api/orgs?page=1&pageSize=10&seed=your-generated-seed`
+    *   Append the new list of organizations to the ones already displayed.
+    *   To check if it's the last page, compare the current page number with the total pages from the response: `if (response.page.number >= response.page.totalPages - 1) { // Hide the 'See More' button }`.
+
 - **Example Request (Seeded Pagination):**
   ```bash
   # The client should generate a seed once (e.g., using a UUID library) 
@@ -182,25 +199,25 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
   curl -X GET "http://localhost:8080/api/orgs?page=1&pageSize=10&seed=a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
   
   # Request filtered by cluster with seeded pagination
-  curl -X GET "http://localhost:8080/api/orgs?cluster=Engage&page=0&pageSize=5&seed=a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+  curl -X GET "http://localhost:8080/api/orgs?cluster=ENGAGE&page=0&pageSize=5&seed=a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
   ```
 - **Response:** A `Page` object containing an array of `OrganizationResponseDto` objects and pagination details.
-- **Example Response for `/api/orgs?cluster=Engage&page=0&seed=clientGeneratedSeed`:**
+- **Example Response for `/api/orgs?page=0&pageSize=5&seed=clientGeneratedSeed`:**
 ```json
 {
     "content": [
         {
-            "id": 1,
-            "name": "DLSU Computer Engineering Society",
-            "shortName": "DLSU CoES",
-            "about": "Dedicated to the advancement of computer engineering.",
-            "fee": 180.00,
-            "bundleFee": 150.00,
-            "gformsUrl": "https://forms.gle/coes",
-            "facebookUrl": "https://facebook.com/coes",
-            "mission": "To foster excellence in CoE.",
-            "vision": "To be a leading CoE org.",
-            "tagline": "Innovate. Create. Engineer.",
+            "id": 2,
+            "name": "DLSU Electronics and Communications Engineering Society",
+            "shortName": "DLSU ECE",
+            "about": "Promoting ECE excellence.",
+            "fee": 170.00,
+            "bundleFee": 140.00,
+            "gformsUrl": "https://forms.gle/ece",
+            "facebookUrl": "https://facebook.com/ece",
+            "mission": "To advance ECE knowledge.",
+            "vision": "To be the best ECE org.",
+            "tagline": "Connect. Communicate. Create.",
             "cluster": {
                 "id": 1,
                 "name": "ENGAGE",
@@ -212,40 +229,21 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
                 "description": "The premier institution for computer science and information technology."
             },
             "publications": {
-                "id": 1,
-                "mainPubUrl": "https://example.com/coes_main.jpg",
-                "feePubUrl": "https://example.com/coes_fee.jpg",
-                "logoUrl": "https://example.com/coes_logo.png",
-                "subLogoUrl": "https://example.com/coes_sublogo.png",
-                "orgVidUrl": "https://youtube.com/coes_vid"
+                "id": 2,
+                "mainPubUrl": "https://example.com/ece_main.jpg",
+                "feePubUrl": "https://example.com/ece_fee.jpg",
+                "logoUrl": "https://example.com/ece_logo.png",
+                "subLogoUrl": "https://example.com/ece_sublogo.png",
+                "orgVidUrl": "https://youtube.com/ece_vid"
             }
         }
     ],
-    "pageable": {
-        "pageNumber": 0,
-        "pageSize": 10,
-        "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-        },
-        "offset": 0,
-        "paged": true,
-        "unpaged": false
-    },
-    "last": true,
-    "totalPages": 1,
-    "totalElements": 1,
-    "size": 10,
-    "number": 0,
-    "sort": {
-        "empty": true,
-        "sorted": false,
-        "unsorted": true
-    },
-    "first": true,
-    "numberOfElements": 1,
-    "empty": false
+    "page": {
+        "size": 5,
+        "number": 0,
+        "totalElements": 15,
+        "totalPages": 3
+    }
 }
 ```
 
@@ -345,7 +343,7 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
     "mission": "To be awesome.",
     "vision": "To spread awesomeness.",
     "tagline": "Be Awesome.",
-    "clusterName": "Engage",
+    "clusterName": "ENGAGE",
     "collegeName": "College of Computer Studies"
   }'
   ```
@@ -432,7 +430,7 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Path:** `/api/clusters/name/{name}`
 - **Example Request:**
   ```bash
-  curl -X GET "http://localhost:8080/api/clusters/name/Engage"
+  curl -X GET "http://localhost:8080/api/clusters/name/ENGAGE"
   ```
 - **Response:** A `Cluster` object.
 
