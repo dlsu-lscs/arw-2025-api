@@ -62,6 +62,10 @@ The user will then be redirected to the frontend URL specified in the applicatio
 - **Description:** Renews the `access_token`.
 - **Requirements:** A valid `refresh_token` cookie must be sent with the request.
 - **Response:** Sets a new `access_token` cookie and returns a success message.
+- **Example Request:**
+  ```bash
+  curl -X POST http://localhost:8080/api/auth/refresh --cookie "refresh_token=your_refresh_token"
+  ```
 
 ### Logout
 
@@ -70,6 +74,10 @@ The user will then be redirected to the frontend URL specified in the applicatio
 - **Description:** Logs the user out by invalidating their refresh token on the server and clearing the session cookies.
 - **Requirements:** A valid `refresh_token` cookie must be sent with the request.
 - **Response:** Clears the `access_token` and `refresh_token` cookies.
+- **Example Request:**
+  ```bash
+  curl -X POST http://localhost:8080/api/auth/logout --cookie "refresh_token=your_refresh_token"
+  ```
 
 ### Access Token Refresh Strategy for Frontend
 
@@ -113,6 +121,10 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Description:** Retrieves the details of the currently authenticated user based on their `access_token`.
 - **Requirements:** A valid `access_token` cookie must be sent with the request.
 - **Response:** A `User` object.
+- **Example Request:**
+  ```bash
+  curl -X GET http://localhost:8080/api/users/current --cookie "access_token=your_access_token"
+  ```
 - **Example Response:**
   ```json
   {
@@ -130,6 +142,10 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Query Parameters:**
   - `email` (String, required): The user's email address.
 - **Response:** A `User` object.
+- **Example Request:**
+  ```bash
+  curl -X GET "http://localhost:8080/api/users?email=test.user.one@example.com" --cookie "access_token=your_access_token"
+  ```
 - **Example Response:**
   ```json
   {
@@ -150,12 +166,26 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Path:** `/api/orgs`
 - **Description:** Retrieves a paginated and randomized list of all organizations. Can be filtered by cluster.
 - **Query Parameters:**
-  - `cluster` (String, optional): The name of the cluster to filter by (e.g., `/api/orgs?cluster=ENGAGE`).
+  - `cluster` (String, optional): The name of the cluster to filter by (e.g., `Engage`).
   - `page` (Integer, optional, default: 0): The page number to retrieve.
   - `pageSize` (Integer, optional, default: 10): The number of items per page.
   - `seed` (String, optional): A seed value for randomizing the order of organizations. To ensure consistent pagination (e.g., for a "see more" feature), the client **must** generate a seed once and send the same seed with every subsequent paginated request. If no seed is provided, the order will be different on every request, breaking pagination.
+- **Example Request (Seeded Pagination):**
+  ```bash
+  # The client should generate a seed once (e.g., using a UUID library) 
+  # and use the same seed for all subsequent "load more" requests.
+  
+  # Initial request for the first page
+  curl -X GET "http://localhost:8080/api/orgs?page=0&pageSize=10&seed=a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+  
+  # Request for the second page (note the same seed is used)
+  curl -X GET "http://localhost:8080/api/orgs?page=1&pageSize=10&seed=a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+  
+  # Request filtered by cluster with seeded pagination
+  curl -X GET "http://localhost:8080/api/orgs?cluster=Engage&page=0&pageSize=5&seed=a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+  ```
 - **Response:** A `Page` object containing an array of `OrganizationResponseDto` objects and pagination details.
-- **Example Response for `/api/orgs?cluster=ENGAGE&page=0&seed=clientGeneratedSeed`:**
+- **Example Response for `/api/orgs?cluster=Engage&page=0&seed=clientGeneratedSeed`:**
 ```json
 {
     "content": [
@@ -225,9 +255,13 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Path:** `/api/orgs/search`
 - **Description:** Searches for organizations by their name, short name, or the name of their associated cluster.
 - **Query Parameters:**
-  - `q` (String, required): The search term (e.g., `/api/orgs/search?q=cs`).
+  - `q` (String, required): The search term.
   - `page` (Integer, optional, default: 0): The page number to retrieve.
   - `pageSize` (Integer, optional, default: 10): The number of items per page.
+- **Example Request:**
+  ```bash
+  curl -X GET "http://localhost:8080/api/orgs/search?q=Computer&page=0&pageSize=5"
+  ```
 - **Response:** A `Page` object containing an array of matching `OrganizationResponseDto` objects and pagination details.
 
 ### Get Organization by ID
@@ -237,6 +271,10 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Description:** Retrieves a single organization by its primary ID.
 - **Path Parameters:**
   - `id` (Integer, required): The unique ID of the organization.
+- **Example Request:**
+  ```bash
+  curl -X GET http://localhost:8080/api/orgs/1
+  ```
 - **Response:** An `OrganizationResponseDto` object.
 - **Example Response:**
 ```json
@@ -279,7 +317,11 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Path:** `/api/orgs/name/{name}`
 - **Description:** Retrieves a single organization by its unique name.
 - **Path Parameters:**
-  - `name` (String, required): The unique name of the organization (e.g., `/api/orgs/name/DLSU%20Computer%20Engineering%20Society`).
+  - `name` (String, required): The unique name of the organization.
+- **Example Request:**
+  ```bash
+  curl -X GET "http://localhost:8080/api/orgs/name/DLSU%20Computer%20Engineering%20Society"
+  ```
 - **Response:** An `OrganizationResponseDto` object.
 
 ### Create Organization
@@ -288,21 +330,24 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Path:** `/api/orgs`
 - **Description:** Creates a new organization.
 - **Request Body:** `OrganizationCreateUpdateRequestDto`
-  ```json
-  {
-    "name": "New Org",
-    "shortName": "NO",
-    "about": "...",
-    "fee": 50.00,
-    "bundleFee": 40.00,
-    "gformsUrl": "...",
-    "facebookUrl": "...",
-    "mission": "...",
-    "vision": "...",
-    "tagline": "...",
-    "clusterName": "ENGAGE",
+- **Example Request:**
+  ```bash
+  curl -X POST http://localhost:8080/api/orgs \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Awesome Org",
+    "shortName": "NAO",
+    "about": "An awesome new organization.",
+    "fee": 100.00,
+    "bundleFee": 80.00,
+    "gformsUrl": "https://forms.gle/neworg",
+    "facebookUrl": "https://facebook.com/neworg",
+    "mission": "To be awesome.",
+    "vision": "To spread awesomeness.",
+    "tagline": "Be Awesome.",
+    "clusterName": "Engage",
     "collegeName": "College of Computer Studies"
-  }
+  }'
   ```
 - **Response:** The newly created `OrganizationResponseDto` object.
 
@@ -314,12 +359,24 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Path Parameters:**
   - `id` (Integer, required): The ID of the organization to update.
 - **Request Body:** `OrganizationCreateUpdateRequestDto` (only include fields to be updated).
+- **Example Request:**
+  ```bash
+  curl -X PATCH http://localhost:8080/api/orgs/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "about": "An updated description for this awesome organization."
+  }'
+  ```
 - **Response:** The updated `OrganizationResponseDto` object.
 
 ### Delete Organization
 
 - **Method:** `DELETE`
 - **Path:** `/api/orgs/{id}`
+- **Example Request:**
+  ```bash
+  curl -X DELETE http://localhost:8080/api/orgs/1
+  ```
 - **Response:** `204 No Content`
 
 ---
@@ -330,6 +387,10 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 
 - **Method:** `GET`
 - **Path:** `/api/clusters`
+- **Example Request:**
+  ```bash
+  curl -X GET http://localhost:8080/api/clusters
+  ```
 - **Response:** An array of `Cluster` objects.
 - **Example Response:**
   ```json
@@ -351,6 +412,10 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 
 - **Method:** `GET`
 - **Path:** `/api/clusters/{id}`
+- **Example Request:**
+  ```bash
+  curl -X GET http://localhost:8080/api/clusters/1
+  ```
 - **Response:** A `Cluster` object.
 - **Example Response:**
   ```json
@@ -365,6 +430,10 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 
 - **Method:** `GET`
 - **Path:** `/api/clusters/name/{name}`
+- **Example Request:**
+  ```bash
+  curl -X GET "http://localhost:8080/api/clusters/name/Engage"
+  ```
 - **Response:** A `Cluster` object.
 
 ### Create Cluster
@@ -372,6 +441,15 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Method:** `POST`
 - **Path:** `/api/clusters`
 - **Request Body:** `Cluster`
+- **Example Request:**
+  ```bash
+  curl -X POST http://localhost:8080/api/clusters \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Cluster",
+    "description": "A brand new cluster."
+  }'
+  ```
 - **Response:** The created `Cluster` object.
 
 ### Update Cluster
@@ -379,13 +457,26 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Method:** `PUT`
 - **Path:** `/api/clusters/{id}`
 - **Request Body:** `Cluster`
+- **Example Request:**
+  ```bash
+  curl -X PUT http://localhost:8080/api/clusters/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Cluster Name",
+    "description": "An updated description."
+  }'
+  ```
 - **Response:** The updated `Cluster` object.
 
 ### Delete Cluster
 
 - **Method:** `DELETE`
 - **Path:** `/api/clusters/{id}`
-- **Response:** `204 No Content`.
+- **Example Request:**
+  ```bash
+  curl -X DELETE http://localhost:8080/api/clusters/1
+  ```
+- **Response:** `204 No Content`
 
 ---
 
@@ -397,6 +488,10 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
 - **Path:** `/api/pubs/by-org-name`
 - **Query Parameters:**
   - `orgName` (String, required): The name of the organization.
+- **Example Request:**
+  ```bash
+  curl -X GET "http://localhost:8080/api/pubs/by-org-name?orgName=DLSU%20Computer%20Engineering%20Society"
+  ```
 - **Response:** A `Publications` object.
 - **Example Response:**
   ```json

@@ -31,10 +31,29 @@ public class OrganizationService {
         this.collegeService = collegeService;
     }
 
+    /**
+     * Retrieves a paginated list of organizations, optionally filtered by cluster
+     * name,
+     * and ordered randomly using a seed for consistent pagination.
+     *
+     * <p>
+     * For consistent pagination, the same seed value must be provided for each
+     * subsequent request.
+     * If no seed is provided, a new random seed is generated, which will result in
+     * a different
+     * random order on every request and break page consistency.
+     * </p>
+     *
+     * @param clusterName the name of the cluster to filter organizations by
+     *                    (optional)
+     * @param page        the page number to retrieve (zero-based)
+     * @param pageSize    the number of organizations per page
+     * @param seed        the seed for random ordering; must be the same for each
+     *                    paginated request to maintain order consistency
+     * @return a page of organizations, filtered and randomly ordered by the
+     *         provided seed
+     **/
     public Page<Organization> getOrganizations(String clusterName, Integer page, Integer pageSize, String seed) {
-        // For pagination to work correctly, the client MUST send the same seed for each subsequent request ("see more").
-        // If no seed is provided, a new random one is generated for each call, which will break page consistency
-        // and result in a different random order on every request.
         String effectiveSeed = (seed != null && !seed.isEmpty()) ? seed : UUID.randomUUID().toString();
         Pageable pageable = PageRequest.of(page, pageSize);
         if (clusterName != null && !clusterName.isEmpty()) {
