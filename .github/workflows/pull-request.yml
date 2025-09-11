@@ -1,0 +1,43 @@
+name: Pull Request CI
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-and-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+
+      - name: Run tests and dependency check
+        run: |
+          ./mvnw verify
+          ./mvnw org.owasp:dependency-check-maven:check
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
