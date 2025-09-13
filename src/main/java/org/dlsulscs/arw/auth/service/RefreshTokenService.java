@@ -5,7 +5,6 @@ import org.dlsulscs.arw.auth.repository.RefreshTokenRepository;
 import org.dlsulscs.arw.common.exception.ResourceNotFoundException;
 import org.dlsulscs.arw.config.properties.JwtProperties;
 import org.dlsulscs.arw.user.model.User;
-import org.dlsulscs.arw.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +23,7 @@ public class RefreshTokenService {
     private final JwtProperties jwtProperties;
 
     @Autowired
-    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UserRepository userRepository,
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository,
             JwtProperties jwtProperties) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtProperties = jwtProperties;
