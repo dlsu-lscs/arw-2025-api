@@ -125,7 +125,6 @@ public class OrganizationController {
                 org.getShortName(),
                 org.getAbout(),
                 org.getFee(),
-                org.getBundleFee(),
                 org.getGformsUrl(),
                 org.getFacebookUrl(),
                 org.getMission(),

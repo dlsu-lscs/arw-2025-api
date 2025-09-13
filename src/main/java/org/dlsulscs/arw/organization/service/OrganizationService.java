@@ -90,7 +90,6 @@ public class OrganizationService {
         newOrg.setShortName(orgDto.shortName());
         newOrg.setAbout(orgDto.about());
         newOrg.setFee(orgDto.fee());
-        newOrg.setBundleFee(orgDto.bundleFee());
         newOrg.setGformsUrl(orgDto.gformsUrl());
         newOrg.setFacebookUrl(orgDto.facebookUrl());
         newOrg.setMission(orgDto.mission());
@@ -115,9 +114,6 @@ public class OrganizationService {
         }
         if (partialUpdate.fee() != null) {
             existingOrg.setFee(partialUpdate.fee());
-        }
-        if (partialUpdate.bundleFee() != null) {
-            existingOrg.setBundleFee(partialUpdate.bundleFee());
         }
         if (partialUpdate.gformsUrl() != null) {
             existingOrg.setGformsUrl(partialUpdate.gformsUrl());

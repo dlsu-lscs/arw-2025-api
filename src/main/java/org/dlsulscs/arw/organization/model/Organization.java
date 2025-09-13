@@ -9,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @Entity
 @Table(name = "orgs")
@@ -25,8 +23,7 @@ public class Organization {
     private String name;
     private String shortName;
     private String about;
-    private BigDecimal fee; // NOTE: BigDecimal for monetary calculations
-    private BigDecimal bundleFee;
+    private String fee;
     private String gformsUrl;
     private String facebookUrl;
     private String mission;
