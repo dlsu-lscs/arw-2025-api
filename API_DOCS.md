@@ -223,11 +223,7 @@ This endpoint is designed to support a "See More" or "Infinite Scroll" style of 
                 "name": "ENGAGE",
                 "description": "Engineering Alliance Geared Towards Excellence"
             },
-            "college": {
-                "id": 1,
-                "name": "College of Computer Studies",
-                "description": "The premier institution for computer science and information technology."
-            },
+            
             "publications": {
                 "id": 2,
                 "mainPubUrl": "https://example.com/ece_main.jpg",
@@ -332,19 +328,18 @@ This endpoint is designed to support a "See More" or "Infinite Scroll" style of 
   ```bash
   curl -X POST http://localhost:8080/api/orgs \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "New Awesome Org",
-    "shortName": "NAO",
-    "about": "An awesome new organization.",
-    "fee": 100.00,
-    "bundleFee": 80.00,
-    "gformsUrl": "https://forms.gle/neworg",
-    "facebookUrl": "https://facebook.com/neworg",
-    "mission": "To be awesome.",
-    "vision": "To spread awesomeness.",
-    "tagline": "Be Awesome.",
-    "clusterName": "ENGAGE",
-    "collegeName": "College of Computer Studies"
+  -d '{ \
+    "name": "New Awesome Org", \
+    "shortName": "NAO", \
+    "about": "An awesome new organization.", \
+    "fee": 100.00, \
+    "bundleFee": 80.00, \
+    "gformsUrl": "https://forms.gle/neworg", \
+    "facebookUrl": "https://facebook.com/neworg", \
+    "mission": "To be awesome.", \
+    "vision": "To spread awesomeness.", \
+    "tagline": "Be Awesome.", \
+    "clusterName": "ENGAGE" \
   }'
   ```
 - **Response:** The newly created `OrganizationResponseDto` object.

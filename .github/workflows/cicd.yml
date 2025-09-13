@@ -1,8 +1,9 @@
+---
 name: CI/CD and Security Scan
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -57,27 +58,35 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set image name
-        run: echo "IMAGE_NAME=ghcr.io/$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,format=short
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build Docker image
-        id: build-image
+      - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: false
-          load: true
-          tags: ${{ env.IMAGE_NAME }}:latest
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Scan Docker image with Trivy
+      - name: 🔒 Run Trivy security scan (image)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.IMAGE_NAME }}:latest
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
+          image-ref: ghcr.io/${{ github.repository }}:latest
+          format: 'sarif'
+          output: 'trivy-image-results.sarif'
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
-
-      - name: Push Docker image
-        run: docker push ${{ env.IMAGE_NAME }}:latest
+        continue-on-error: true

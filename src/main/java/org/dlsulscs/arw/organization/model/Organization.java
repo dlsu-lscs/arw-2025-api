@@ -2,7 +2,6 @@ package org.dlsulscs.arw.organization.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.dlsulscs.arw.cluster.model.Cluster;
-import org.dlsulscs.arw.college.model.College;
 import org.dlsulscs.arw.publication.model.Publications;
 
 import jakarta.persistence.*;
@@ -37,10 +36,6 @@ public class Organization {
     @ManyToOne
     @JoinColumn(name = "cluster_id")
     private Cluster cluster;
-
-    @ManyToOne
-    @JoinColumn(name = "college_id")
-    private College college;
 
     @OneToOne(mappedBy = "organization")
     @JsonManagedReference

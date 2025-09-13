@@ -2,8 +2,6 @@ package org.dlsulscs.arw.organization.service;
 
 import org.dlsulscs.arw.cluster.model.Cluster;
 import org.dlsulscs.arw.cluster.service.ClusterService;
-import org.dlsulscs.arw.college.model.College;
-import org.dlsulscs.arw.college.service.CollegeService;
 import org.dlsulscs.arw.common.exception.ResourceNotFoundException;
 import org.dlsulscs.arw.organization.dto.OrganizationCreateUpdateRequestDto;
 import org.dlsulscs.arw.organization.model.Organization;
@@ -21,14 +19,11 @@ public class OrganizationService {
 
     private final OrganizationRepository organizationRepository;
     private final ClusterService clusterService;
-    private final CollegeService collegeService;
 
     @Autowired
-    public OrganizationService(OrganizationRepository organizationRepository, ClusterService clusterService,
-            CollegeService collegeService) {
+    public OrganizationService(OrganizationRepository organizationRepository, ClusterService clusterService) {
         this.organizationRepository = organizationRepository;
         this.clusterService = clusterService;
-        this.collegeService = collegeService;
     }
 
     /**
@@ -89,7 +84,6 @@ public class OrganizationService {
 
     public Organization createOrganization(OrganizationCreateUpdateRequestDto orgDto) {
         Cluster cluster = clusterService.getClusterByName(orgDto.clusterName());
-        College college = collegeService.getCollegeByName(orgDto.collegeName());
 
         Organization newOrg = new Organization();
         newOrg.setName(orgDto.name());
@@ -103,7 +97,6 @@ public class OrganizationService {
         newOrg.setVision(orgDto.vision());
         newOrg.setTagline(orgDto.tagline());
         newOrg.setCluster(cluster);
-        newOrg.setCollege(college);
 
         return organizationRepository.save(newOrg);
     }
@@ -144,10 +137,6 @@ public class OrganizationService {
         if (partialUpdate.clusterName() != null) {
             Cluster cluster = clusterService.getClusterByName(partialUpdate.clusterName());
             existingOrg.setCluster(cluster);
-        }
-        if (partialUpdate.collegeName() != null) {
-            College college = collegeService.getCollegeByName(partialUpdate.collegeName());
-            existingOrg.setCollege(college);
         }
 
         return organizationRepository.save(existingOrg);

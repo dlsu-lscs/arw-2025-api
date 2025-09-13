@@ -1,25 +1,18 @@
 DROP TABLE IF EXISTS org_pubs;
 DROP TABLE IF EXISTS orgs;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS colleges;
 DROP TABLE IF EXISTS clusters;
+DROP TABLE IF EXISTS refresh_tokens;
 
 -- Table for Clusters
-CREATE TABLE clusters (
-    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(120) NOT NULL,
-    description TEXT
-);
-
--- Table for Colleges
-CREATE TABLE colleges (
+CREATE TABLE IF NOT EXISTS clusters (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
     description TEXT
 );
 
 -- Table for Users
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     display_picture VARCHAR(255),
@@ -27,13 +20,12 @@ CREATE TABLE users (
 );
 
 -- Table for Organizations
-CREATE TABLE orgs (
+CREATE TABLE IF NOT EXISTS orgs (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
     short_name VARCHAR(20),
     about TEXT,
     cluster_id INT,
-    college_id INT,
     fee DECIMAL(10, 2),
     bundle_fee DECIMAL(10, 2),
     gforms_url TEXT,
@@ -41,12 +33,11 @@ CREATE TABLE orgs (
     mission TEXT,
     vision TEXT,
     tagline TEXT,
-    FOREIGN KEY (cluster_id) REFERENCES clusters(id),
-    FOREIGN KEY (college_id) REFERENCES colleges(id)
+    FOREIGN KEY (cluster_id) REFERENCES clusters(id)
 );
 
 -- Table for Organization Publications/Media
-CREATE TABLE org_pubs (
+CREATE TABLE IF NOT EXISTS org_pubs (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     org_id INT,
     main_pub_url TEXT,
@@ -55,4 +46,12 @@ CREATE TABLE org_pubs (
     sub_logo_url TEXT,
     org_vid_url TEXT,
     FOREIGN KEY (org_id) REFERENCES orgs(id)
+);
+
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    token VARCHAR(255) UNIQUE NOT NULL,
+    expiry_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    user_id INT UNIQUE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

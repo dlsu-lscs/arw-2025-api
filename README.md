@@ -176,7 +176,6 @@ When running the application in production (either as a JAR or a Docker containe
 - `org_pubs`
 - `orgs`
 - `users`
-- `colleges`
 - `clusters` (like categories to classify orgs)
 
 ## **Production API Readiness Checklist**

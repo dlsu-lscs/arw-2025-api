@@ -13,6 +13,5 @@ public record OrganizationCreateUpdateRequestDto(
         String mission,
         String vision,
         String tagline,
-        String clusterName,
-        String collegeName) {
+        String clusterName) {
 }

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import org.dlsulscs.arw.organization.dto.OrganizationResponseDto;
 import org.dlsulscs.arw.cluster.dto.ClusterDto;
-import org.dlsulscs.arw.college.dto.CollegeDto;
 import org.dlsulscs.arw.publication.dto.PublicationsDto;
 
 @RestController
@@ -109,12 +108,6 @@ public class OrganizationController {
                     org.getCluster().getDescription());
         }
 
-        CollegeDto collegeDto = null;
-        if (org.getCollege() != null) {
-            collegeDto = new CollegeDto(org.getCollege().getId(), org.getCollege().getName(),
-                    org.getCollege().getDescription());
-        }
-
         PublicationsDto publicationsDto = null;
         if (org.getPublications() != null) {
             publicationsDto = new PublicationsDto(
@@ -139,7 +132,6 @@ public class OrganizationController {
                 org.getVision(),
                 org.getTagline(),
                 clusterDto,
-                collegeDto,
                 publicationsDto);
     }
 }
