@@ -5,10 +5,10 @@
 This is the backend API for ARW 2025, a Java and Spring Boot application.
 
 - **Core Technologies:** Java 21, Spring Boot 3.5.5, Maven
-- **Database:** MySQL, managed with Docker Compose and Flyway for migrations.
+- **Database:** PostgreSQL, managed with Docker Compose and Flyway for migrations.
 - **API:** Provides RESTful endpoints.
 - **Authentication:** Integrated with Google OAuth2 for user authentication.
-- **Dependencies:** Spring Web, Spring Data JPA, Spring Security, MySQL Connector, Lombok.
+- **Dependencies:** Spring Web, Spring Data JPA, Spring Security, PostgreSQL Driver, Lombok.
 
 ## Building and Running
 
@@ -21,7 +21,7 @@ This is the backend API for ARW 2025, a Java and Spring Boot application.
 
 - **Google OAuth2 Credentials:** Open `src/main/resources/application.properties` and replace `YOUR_GOOGLE_CLIENT_ID` and `YOUR_GOOGLE_CLIENT_SECRET` with your actual Google API credentials.
 
-- **Start the Database:** Run the following command to start the MySQL database in the background.
+- **Start the Database:** Run the following command to start the PostgreSQL database in the background.
   ```bash
   docker-compose up -d
   ```
