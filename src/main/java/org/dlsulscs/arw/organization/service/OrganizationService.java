@@ -5,6 +5,7 @@ import org.dlsulscs.arw.cluster.service.ClusterService;
 import org.dlsulscs.arw.common.exception.ResourceNotFoundException;
 import org.dlsulscs.arw.organization.dto.OrganizationCreateUpdateRequestDto;
 import org.dlsulscs.arw.organization.dto.OrganizationFeeGformsUpdateRequestDto;
+import org.dlsulscs.arw.organization.dto.OrganizationBulkUpdateDto;
 import org.dlsulscs.arw.organization.model.Organization;
 import org.dlsulscs.arw.organization.repository.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -172,6 +174,22 @@ public class OrganizationService {
         }
 
         return organizationRepository.save(existingOrg);
+    }
+
+    @Transactional
+    public List<Organization> bulkUpdateOrganizations(List<OrganizationBulkUpdateDto> updateDtos) {
+        List<Organization> updatedOrgs = updateDtos.stream().map(dto -> {
+            Organization org = getOrganizationByShortName(dto.shortName());
+            if (dto.fee() != null) {
+                org.setFee(dto.fee());
+            }
+            if (dto.gformsUrl() != null) {
+                org.setGformsUrl(dto.gformsUrl());
+            }
+            return org;
+        }).collect(Collectors.toList());
+
+        return organizationRepository.saveAll(updatedOrgs);
     }
 
 }

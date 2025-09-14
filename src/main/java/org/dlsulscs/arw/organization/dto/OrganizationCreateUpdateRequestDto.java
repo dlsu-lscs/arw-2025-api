@@ -1,14 +1,16 @@
 package org.dlsulscs.arw.organization.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record OrganizationCreateUpdateRequestDto(
         String name,
-        String shortName,
+        @JsonProperty("short_name") String shortName,
         String about,
         String fee,
-        String gformsUrl,
-        String facebookUrl,
+        @JsonProperty("gforms_url") String gformsUrl,
+        @JsonProperty("facebook_url") String facebookUrl,
         String mission,
         String vision,
         String tagline,
-        String clusterName) {
+        @JsonProperty("cluster_id") String clusterName) {
 }

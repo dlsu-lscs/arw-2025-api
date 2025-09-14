@@ -359,11 +359,37 @@ This endpoint is designed to support a "See More" or "Infinite Scroll" style of 
   ```bash
   curl -X PATCH http://localhost:8080/api/orgs/1 \
   -H "Content-Type: application/json" \
-  -d '{
-    "about": "An updated description for this awesome organization."
+  -d '{ \
+    "about": "An updated description for this awesome organization." \
   }'
   ```
 - **Response:** The updated `OrganizationResponseDto` object.
+
+### Bulk Update Organizations
+
+- **Method:** `PATCH`
+- **Path:** `/api/orgs/bulk-update`
+- **Description:** Partially updates multiple existing organizations' details by their short names.
+- **Request Body:** `List<OrganizationBulkUpdateDto>` (A list of objects, each containing the `shortName` and the fields to update).
+- **Example Request:**
+  ```bash
+  curl -X PATCH http://localhost:8080/api/orgs/bulk-update \
+  -H "Content-Type: application/json" \
+  -d \
+  '[
+    {
+      "shortName": "DLSU-FC",
+      "fee": "250.00",
+      "gformsUrl": "https://new.url/futsal"
+    },
+    {
+      "shortName": "POLISCY",
+      "fee": "200.00"
+    }
+  ]'
+  ```
+- **Response:** A list of the updated `OrganizationResponseDto` objects.
+
 
 ### Delete Organization
 

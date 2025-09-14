@@ -2,6 +2,7 @@ package org.dlsulscs.arw.organization.controller;
 
 import org.dlsulscs.arw.organization.dto.OrganizationCreateUpdateRequestDto;
 import org.dlsulscs.arw.organization.dto.OrganizationFeeGformsUpdateRequestDto;
+import org.dlsulscs.arw.organization.dto.OrganizationBulkUpdateDto;
 import org.dlsulscs.arw.organization.model.Organization;
 import org.dlsulscs.arw.organization.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,6 +121,16 @@ public class OrganizationController {
             @RequestBody OrganizationFeeGformsUpdateRequestDto partialUpdateDto) {
         Organization patchedOrg = organizationService.patchOrganizationByShortName(shortName, partialUpdateDto);
         return ResponseEntity.ok(mapToOrganizationResponseDto(patchedOrg));
+    }
+
+    @PatchMapping("/bulk-update")
+    public ResponseEntity<List<OrganizationResponseDto>> bulkUpdateOrganizations(
+            @RequestBody List<OrganizationBulkUpdateDto> updateDtos) {
+        List<Organization> updatedOrgs = organizationService.bulkUpdateOrganizations(updateDtos);
+        List<OrganizationResponseDto> responseDtos = updatedOrgs.stream()
+                .map(this::mapToOrganizationResponseDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responseDtos);
     }
 
     private OrganizationResponseDto mapToOrganizationResponseDto(Organization org) {
