@@ -328,21 +328,24 @@ This endpoint is designed to support a "See More" or "Infinite Scroll" style of 
   ```bash
   curl -X POST http://localhost:8080/api/orgs \
   -H "Content-Type: application/json" \
-  -d '{ \
-    "name": "New Awesome Org", \
-    "shortName": "NAO", \
-    "about": "An awesome new organization.", \
-    "fee": 100.00, \
-    "bundleFee": 80.00, \
-    "gformsUrl": "https://forms.gle/neworg", \
-    "facebookUrl": "https://facebook.com/neworg", \
-    "mission": "To be awesome.", \
-    "vision": "To spread awesomeness.", \
-    "tagline": "Be Awesome.", \
-    "clusterName": "ENGAGE" \
-  }'
+  -d '{ "name": "New Awesome Org", "shortName": "NAO", "about": "An awesome new organization.", "fee": "100.00", "gformsUrl": "https://forms.gle/neworg", "facebookUrl": "https://facebook.com/neworg", "mission": "To be awesome.", "vision": "To spread awesomeness.", "tagline": "Be Awesome.", "clusterName": "ENGAGE" }'
   ```
 - **Response:** The newly created `OrganizationResponseDto` object.
+
+### Create Multiple Organizations
+
+- **Method:** `POST`
+- **Path:** `/api/orgs/bulk`
+- **Description:** Creates multiple new organizations in a single request. The request body should be a JSON array of organization objects.
+- **Request Body:** `List<OrganizationCreateUpdateRequestDto>`
+- **Example Request:**
+  ```bash
+  curl -X POST http://localhost:8080/api/orgs/bulk \
+  -H "Content-Type: application/json" \
+  -d '[{ "name": "De La Salle University Futsal Club", "shortName": "DLSU FC", "about": "The DLSU Futsal Club is a sports organization...", "clusterName": "Outside CSO", "fee": null, "gformsUrl": null, "facebookUrl": "https://www.facebook.com/dlsufutsalclub", "mission": "N/A", "vision": "N/A", "tagline": "Where passion meets the pitch, one kick at a time." }, { "name": "Political Science Society", "shortName": "POLISCY", "about": "DLSU POLISCY is one of the premier bastions...", "clusterName": "CAP 13", "fee": null, "gformsUrl": null, "facebookUrl": "https://www.facebook.com/DLSUPOLISCY", "mission": "We, the Political Science Society, commit ourselves...", "vision": "The Political Science Society envisions...", "tagline": "The premier bastions of political awareness and critical thinking." }]'
+  ```
+- **Response:** A list of the newly created `OrganizationResponseDto` objects.
+
 
 ### Update Organization
 

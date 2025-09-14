@@ -4,6 +4,7 @@ import org.dlsulscs.arw.cluster.model.Cluster;
 import org.dlsulscs.arw.cluster.service.ClusterService;
 import org.dlsulscs.arw.common.exception.ResourceNotFoundException;
 import org.dlsulscs.arw.organization.dto.OrganizationCreateUpdateRequestDto;
+import org.dlsulscs.arw.organization.dto.OrganizationFeeGformsUpdateRequestDto;
 import org.dlsulscs.arw.organization.model.Organization;
 import org.dlsulscs.arw.organization.repository.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class OrganizationService {
@@ -82,7 +85,22 @@ public class OrganizationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Organization not found with name: " + name));
     }
 
+    public Organization getOrganizationByShortName(String shortName) {
+        return this.organizationRepository.findByShortName(shortName)
+                .orElseThrow(() -> new ResourceNotFoundException("Organization not found with short name: " + shortName));
+    }
+
     public Organization createOrganization(OrganizationCreateUpdateRequestDto orgDto) {
+        Organization newOrg = createOrganizationFromDto(orgDto);
+        return organizationRepository.save(newOrg);
+    }
+
+    public List<Organization> createOrganizations(List<OrganizationCreateUpdateRequestDto> orgDtos) {
+        List<Organization> newOrgs = orgDtos.stream().map(this::createOrganizationFromDto).collect(Collectors.toList());
+        return organizationRepository.saveAll(newOrgs);
+    }
+
+    private Organization createOrganizationFromDto(OrganizationCreateUpdateRequestDto orgDto) {
         Cluster cluster = clusterService.getClusterByName(orgDto.clusterName());
 
         Organization newOrg = new Organization();
@@ -97,7 +115,7 @@ public class OrganizationService {
         newOrg.setTagline(orgDto.tagline());
         newOrg.setCluster(cluster);
 
-        return organizationRepository.save(newOrg);
+        return newOrg;
     }
 
     public Organization patchOrganization(Integer id, OrganizationCreateUpdateRequestDto partialUpdate) {
@@ -141,6 +159,19 @@ public class OrganizationService {
     public void deleteOrganization(Integer id) {
         Organization org = getOrganizationById(id);
         organizationRepository.delete(org);
+    }
+
+    public Organization patchOrganizationByShortName(String shortName, OrganizationFeeGformsUpdateRequestDto partialUpdate) {
+        Organization existingOrg = getOrganizationByShortName(shortName);
+
+        if (partialUpdate.fee() != null) {
+            existingOrg.setFee(partialUpdate.fee());
+        }
+        if (partialUpdate.gformsUrl() != null) {
+            existingOrg.setGformsUrl(partialUpdate.gformsUrl());
+        }
+
+        return organizationRepository.save(existingOrg);
     }
 
 }

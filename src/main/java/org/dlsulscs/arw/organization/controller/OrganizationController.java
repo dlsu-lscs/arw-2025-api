@@ -1,6 +1,7 @@
 package org.dlsulscs.arw.organization.controller;
 
 import org.dlsulscs.arw.organization.dto.OrganizationCreateUpdateRequestDto;
+import org.dlsulscs.arw.organization.dto.OrganizationFeeGformsUpdateRequestDto;
 import org.dlsulscs.arw.organization.model.Organization;
 import org.dlsulscs.arw.organization.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import org.dlsulscs.arw.organization.dto.OrganizationResponseDto;
 import org.dlsulscs.arw.cluster.dto.ClusterDto;
 import org.dlsulscs.arw.publication.dto.PublicationsDto;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orgs")
@@ -88,6 +92,16 @@ public class OrganizationController {
         return ResponseEntity.status(201).body(mapToOrganizationResponseDto(newOrg));
     }
 
+    @PostMapping("/bulk")
+    public ResponseEntity<List<OrganizationResponseDto>> createOrganizations(
+            @RequestBody List<OrganizationCreateUpdateRequestDto> orgDtos) {
+        List<Organization> newOrgs = organizationService.createOrganizations(orgDtos);
+        List<OrganizationResponseDto> responseDtos = newOrgs.stream()
+                .map(this::mapToOrganizationResponseDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.status(201).body(responseDtos);
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<OrganizationResponseDto> patchOrganization(@PathVariable Integer id,
             @RequestBody OrganizationCreateUpdateRequestDto partialUpdateDto) {
@@ -99,6 +113,13 @@ public class OrganizationController {
     public ResponseEntity<Void> deleteOrganization(@PathVariable Integer id) {
         organizationService.deleteOrganization(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/short-name/{shortName}")
+    public ResponseEntity<OrganizationResponseDto> patchOrganizationByShortName(@PathVariable String shortName,
+            @RequestBody OrganizationFeeGformsUpdateRequestDto partialUpdateDto) {
+        Organization patchedOrg = organizationService.patchOrganizationByShortName(shortName, partialUpdateDto);
+        return ResponseEntity.ok(mapToOrganizationResponseDto(patchedOrg));
     }
 
     private OrganizationResponseDto mapToOrganizationResponseDto(Organization org) {

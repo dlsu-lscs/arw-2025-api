@@ -17,6 +17,9 @@ public interface OrganizationRepository extends JpaRepository<Organization, Inte
     @Query("SELECT o FROM Organization o WHERE lower(o.name) = lower(:name)")
     Optional<Organization> findByName(@Param("name") String name);
 
+    @Query("SELECT o FROM Organization o WHERE lower(o.shortName) = lower(:shortName)")
+    Optional<Organization> findByShortName(@Param("shortName") String shortName);
+
     @Query("SELECT o FROM Organization o WHERE lower(o.cluster.name) = lower(:clusterName)")
     Page<Organization> findOrganizationByClusterName(@Param("clusterName") String clusterName, Pageable pageable);
 
