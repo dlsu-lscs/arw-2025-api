@@ -84,7 +84,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: 🔒 Run Trivy security scan (image)
+      - name: Run Trivy security scan (image)
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ghcr.io/${{ github.repository }}:latest
@@ -93,3 +93,13 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
         continue-on-error: true
+
+      - name: Deploy to DigitalOcean Droplet via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER || 'root' }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            cd /root
+            ./deploy.sh
