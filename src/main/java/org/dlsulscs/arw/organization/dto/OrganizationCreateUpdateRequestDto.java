@@ -11,6 +11,6 @@ public record OrganizationCreateUpdateRequestDto(
         @JsonProperty("facebook_url") String facebookUrl,
         String mission,
         String vision,
-        String tagline,
-        @JsonProperty("cluster_id") String clusterName) {
+        @JsonProperty("tagline") String tagline,
+        @JsonProperty("cluster_name") String clusterName) {
 }
