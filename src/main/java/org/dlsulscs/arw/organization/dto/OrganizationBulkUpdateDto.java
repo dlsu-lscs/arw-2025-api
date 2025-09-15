@@ -1,8 +1,10 @@
 package org.dlsulscs.arw.organization.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record OrganizationBulkUpdateDto(
-        String shortName,
+        @JsonProperty("short_name") String shortName,
         String fee,
-        String gformsUrl
+        @JsonProperty("gforms_url") String gformsUrl
 ) {
 }

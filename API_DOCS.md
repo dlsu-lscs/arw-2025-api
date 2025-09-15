@@ -371,23 +371,22 @@ This endpoint is designed to support a "See More" or "Infinite Scroll" style of 
 - **Method:** `PATCH`
 - **Path:** `/api/orgs/bulk-update`
 - **Description:** Partially updates multiple existing organizations' details by their short names.
-- **Request Body:** `List<OrganizationBulkUpdateDto>` (A list of objects, each containing the `shortName` and the fields to update).
+- **Request Body:** `List<OrganizationBulkUpdateDto>` (A list of objects, each containing the `short_name` and the fields to update).
 - **Example Request:**
   ```bash
   curl -X PATCH http://localhost:8080/api/orgs/bulk-update \
   -H "Content-Type: application/json" \
   -d \
-  '[
+  [
     {
-      "shortName": "DLSU-FC",
-      "fee": "250.00",
-      "gformsUrl": "https://new.url/futsal"
+      "short_name": "SV",
+      "gforms_url": "https://docs.google.com/forms/d/e/1FAIpQLScD1F-nq0HUKE4-roiDVNF9RgyvtgvI2vdDrIfcM1n1K0PSTA/viewform?usp=header"
     },
     {
-      "shortName": "POLISCY",
-      "fee": "200.00"
+      "short_name": "MC",
+      "gforms_url": "https://docs.google.com/forms/d/e/1FAIpQLScJc1H4bxarR4TeVMpuauNaKMTZBp7vBuk-D2pjLSs1tlcapQ/viewform"
     }
-  ]'
+  ]
   ```
 - **Response:** A list of the updated `OrganizationResponseDto` objects.
 
