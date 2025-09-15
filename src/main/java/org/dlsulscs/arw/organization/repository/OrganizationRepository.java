@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -43,5 +44,8 @@ public interface OrganizationRepository extends JpaRepository<Organization, Inte
         countQuery = "SELECT count(o.id) FROM orgs o JOIN clusters c ON o.cluster_id = c.id WHERE lower(c.name) = lower(:clusterName)",
         nativeQuery = true)
     Page<Organization> findAllByClusterNameWithSeed(@Param("clusterName") String clusterName, Pageable pageable, @Param("seed") String seed);
+
+    @Query("SELECT o FROM Organization o WHERE o.shortName IN :shortNames")
+    List<Organization> findByShortNameIn(@Param("shortNames") List<String> shortNames);
 
 }

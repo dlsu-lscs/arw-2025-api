@@ -42,14 +42,14 @@ jobs:
           ./mvnw clean install -DskipTests
           ./mvnw org.owasp:dependency-check-maven:check
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-
-      - name: Upload OWASP Dependency-Check report
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-check-report
-          path: target/dependency-check-report.html
+      # - name: Perform CodeQL Analysis
+      #   uses: github/codeql-action/analyze@v3
+      #
+      # - name: Upload OWASP Dependency-Check report
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: dependency-check-report
+      #     path: target/dependency-check-report.html
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

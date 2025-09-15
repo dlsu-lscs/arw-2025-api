@@ -527,3 +527,46 @@ This endpoint is designed to support a "See More" or "Infinite Scroll" style of 
     "org_vid_url": "https://youtube.com/coes_vid"
   }
   ```
+
+### Create or Update Publication
+
+- **Method:** `POST`
+- **Path:** `/api/pubs`
+- **Description:** Creates or updates an organization's publication materials. It uses the `short_name` to identify the organization.
+- **Request Body:** `PublicationUploadRequestDto`
+- **Example Request:**
+  ```bash
+  curl -X POST http://localhost:8080/api/pubs \
+  -H "Content-Type: application/json" \
+  -d '{
+    "short_name": "LSCS",
+    "main_pub_url": "https://new-main-pub.url/lscs",
+    "logo_url": "https://new-logo.url/lscs"
+  }'
+  ```
+- **Response:** The created or updated `PublicationsDto` object.
+
+### Bulk Create or Update Publications
+
+- **Method:** `POST`
+- **Path:** `/api/pubs/bulk`
+- **Description:** Creates or updates publication materials for multiple organizations in a single request.
+- **Request Body:** `List<PublicationUploadRequestDto>`
+- **Example Request:**
+  ```bash
+  curl -X POST http://localhost:8080/api/pubs/bulk \
+  -H "Content-Type: application/json" \
+  -d \
+  '[
+    {
+      "short_name": "LSCS",
+      "main_pub_url": "https://new-main-pub.url/lscs",
+      "logo_url": "https://new-logo.url/lscs"
+    },
+    {
+      "short_name": "POLISCY",
+      "main_pub_url": "https://new-main-pub.url/poliscy"
+    }
+  ]'
+  ```
+- **Response:** A list of the created or updated `PublicationsDto` objects.
