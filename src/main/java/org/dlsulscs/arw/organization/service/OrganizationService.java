@@ -68,16 +68,24 @@ public class OrganizationService {
         String effectiveSeed = (seed != null && !seed.isEmpty()) ? seed : UUID.randomUUID().toString();
         Pageable pageable = PageRequest.of(page, pageSize);
 
-        boolean hasPrioritized = prioritized != null && !prioritized.isEmpty();
+        List<String> prioritizedList = null;
+        if (prioritized != null && !prioritized.isEmpty()) {
+            prioritizedList = java.util.Arrays.stream(prioritized.split(","))
+                    .map(String::trim)
+                    .map(String::toLowerCase)
+                    .collect(Collectors.toList());
+        }
+
+        boolean hasPrioritized = prioritizedList != null && !prioritizedList.isEmpty();
         boolean hasCluster = clusterName != null && !clusterName.isEmpty();
 
         if (hasCluster && hasPrioritized) {
             return organizationRepository.findAllByClusterNameWithSeedAndPrioritized(clusterName, pageable,
-                    effectiveSeed, prioritized);
+                    effectiveSeed, prioritizedList);
         } else if (hasCluster) {
             return organizationRepository.findAllByClusterNameWithSeed(clusterName, pageable, effectiveSeed);
         } else if (hasPrioritized) {
-            return organizationRepository.findAllWithSeedAndPrioritized(pageable, effectiveSeed, prioritized);
+            return organizationRepository.findAllWithSeedAndPrioritized(pageable, effectiveSeed, prioritizedList);
         } else {
             return organizationRepository.findAllWithSeed(pageable, effectiveSeed);
         }

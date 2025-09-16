@@ -170,7 +170,7 @@ This API uses short-lived JWT `access_token`s (15 minutes) and long-lived `refre
   - `page` (Integer, optional, default: 0): The page number to retrieve.
   - `pageSize` (Integer, optional, default: 10): The number of items per page.
   - `seed` (String, optional): A seed value for randomizing the order of organizations. To ensure consistent pagination (e.g., for a "see more" feature), the client **must** generate a seed once and send the same seed with every subsequent paginated request. If no seed is provided, the order will be different on every request, breaking pagination.
-  - `prioritized` (String, optional): The short name of an organization to display first in the list (e.g., `CSO`).
+  - `prioritized` (String, optional): A comma-separated list of organization short names to display first (e.g., `CSO,USG`). The order among these prioritized organizations is not guaranteed.
 
 #### Implementing "See More" Pagination (Frontend Guide)
 
