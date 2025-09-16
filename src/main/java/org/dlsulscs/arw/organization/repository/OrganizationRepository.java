@@ -48,4 +48,14 @@ public interface OrganizationRepository extends JpaRepository<Organization, Inte
     @Query("SELECT o FROM Organization o WHERE o.shortName IN :shortNames")
     List<Organization> findByShortNameIn(@Param("shortNames") List<String> shortNames);
 
+    @Query(value = "SELECT * FROM orgs ORDER BY CASE WHEN lower(short_name) = lower(:prioritized) THEN 0 ELSE 1 END, md5(id::text || :seed)",
+        countQuery = "SELECT count(*) FROM orgs",
+        nativeQuery = true)
+    Page<Organization> findAllWithSeedAndPrioritized(Pageable pageable, @Param("seed") String seed, @Param("prioritized") String prioritized);
+
+    @Query(value = "SELECT o.* FROM orgs o JOIN clusters c ON o.cluster_id = c.id WHERE lower(c.name) = lower(:clusterName) ORDER BY CASE WHEN lower(o.short_name) = lower(:prioritized) THEN 0 ELSE 1 END, md5(o.id::text || :seed)",
+        countQuery = "SELECT count(o.id) FROM orgs o JOIN clusters c ON o.cluster_id = c.id WHERE lower(c.name) = lower(:clusterName)",
+        nativeQuery = true)
+    Page<Organization> findAllByClusterNameWithSeedAndPrioritized(@Param("clusterName") String clusterName, Pageable pageable, @Param("seed") String seed, @Param("prioritized") String prioritized);
+
 }

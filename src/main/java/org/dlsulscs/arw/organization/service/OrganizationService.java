@@ -63,13 +63,24 @@ public class OrganizationService {
      * @return a page of organizations, filtered and randomly ordered by the
      *         provided seed
      */
-    public Page<Organization> getOrganizations(String clusterName, Integer page, Integer pageSize, String seed) {
+    public Page<Organization> getOrganizations(String clusterName, Integer page, Integer pageSize, String seed,
+            String prioritized) {
         String effectiveSeed = (seed != null && !seed.isEmpty()) ? seed : UUID.randomUUID().toString();
         Pageable pageable = PageRequest.of(page, pageSize);
-        if (clusterName != null && !clusterName.isEmpty()) {
+
+        boolean hasPrioritized = prioritized != null && !prioritized.isEmpty();
+        boolean hasCluster = clusterName != null && !clusterName.isEmpty();
+
+        if (hasCluster && hasPrioritized) {
+            return organizationRepository.findAllByClusterNameWithSeedAndPrioritized(clusterName, pageable,
+                    effectiveSeed, prioritized);
+        } else if (hasCluster) {
             return organizationRepository.findAllByClusterNameWithSeed(clusterName, pageable, effectiveSeed);
+        } else if (hasPrioritized) {
+            return organizationRepository.findAllWithSeedAndPrioritized(pageable, effectiveSeed, prioritized);
+        } else {
+            return organizationRepository.findAllWithSeed(pageable, effectiveSeed);
         }
-        return this.organizationRepository.findAllWithSeed(pageable, effectiveSeed);
     }
 
     public Page<Organization> searchOrganizations(String query, Integer page, Integer pageSize) {
